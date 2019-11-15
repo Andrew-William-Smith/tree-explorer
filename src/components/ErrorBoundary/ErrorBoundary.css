@@ -1,0 +1,26 @@
+.errorCard {
+    width: 50%;
+    margin-left: 25%;
+    margin-top: 20%;
+}
+
+.errorCard .bp3-icon, .errorCard .bp3-heading {
+    padding: 5px 0;
+}
+
+.debugInfoPane {
+    margin-top: 12px;
+}
+
+.errorCard p {
+    margin-bottom: 0;
+}
+
+.errorCard pre {
+    overflow-y: scroll;
+    max-height: 20%;
+}
+
+.errorCard .bp3-divider {
+    margin: 10px 0 10px 0;
+}
