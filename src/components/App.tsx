@@ -2,9 +2,9 @@ import React from 'react';
 import { observer, inject } from 'mobx-react';
 
 import { Alignment, Navbar, NavbarGroup, NavbarHeading } from '@blueprintjs/core';
-import { IconNames } from '@blueprintjs/icons';
 
 import ApplicationStore from '../stores/ApplicationStore';
+import Sidebar from './Sidebar/Sidebar';
 
 interface IAppProps {
     applicationStore?: ApplicationStore
@@ -26,6 +26,11 @@ export default class App extends React.Component<IAppProps, {}> {
                         </a>
                     </NavbarGroup>
                 </Navbar>
+                <div className="appBody">
+                    {/* TODO: Actual tree contents */}
+                    <div style={{flexGrow: 1}}></div>
+                    <Sidebar />
+                </div>
             </div>
         );
     }
