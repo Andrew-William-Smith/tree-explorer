@@ -4,19 +4,27 @@ import { IconNames, IconName } from '@blueprintjs/icons';
 
 export interface IApplicationStore {
     /** Array of all items stored in the current application state. */
-    items: Array<String>;
+    items: Array<string>;
+    /** Whether to explain additions to the tree. */
+    explainAdd: boolean;
+    /** Whether to explain deletions from the tree. */
+    explainRemove: boolean;
 }
 
 export default class ApplicationStore implements IApplicationStore {
-    @observable items: Array<String>;
+    @observable items: Array<string>;
+    @observable explainAdd: boolean;
+    @observable explainRemove: boolean;
     /** Used to display toast notifications within this application. */
     private toaster: IToaster;
 
     constructor() {
         this.items = [];
+        this.explainAdd = true;
+        this.explainRemove = true;
         // Show toast notifications in the top right corner
         this.toaster = Toaster.create({
-            'position': Position.TOP_RIGHT
+            'position': Position.BOTTOM_RIGHT
         });
     }
 
@@ -28,16 +36,43 @@ export default class ApplicationStore implements IApplicationStore {
      * @param item The item to which to add to the trees.
      */
     @action.bound
-    public addItem = (item: String) => {
+    public addItem = (item: string) => {
         if (this.items.includes(item)) {
-            this.showToast(`Cannot add duplicate item ${item} to tree.`,
+            this.showToast(`Cannot add duplicate item "${item}" to tree.`,
                 Intent.WARNING, IconNames.WARNING_SIGN);
         } else {
             this.items.push(item);
         }
     };
 
-    public showToast = (message: String, intent: Intent, icon: IconName) => {
+    /**
+     * Remove the item at the specified index in the list of items from all
+     * trees in the current workspace.
+     * 
+     * @param index The index whose item to remove.
+     */
+    @action.bound
+    public removeItemAtIndex = (index: number) => {
+        this.items.splice(index, 1);
+    }
+
+    /**
+     * Toggle whether item additions should be explained in detail.
+     */
+    @action.bound
+    public toggleExplainAdd = () => {
+        this.explainAdd = !this.explainAdd;
+    }
+
+    /**
+     * Toggle whether item removals should be explained in detail.
+     */
+    @action.bound
+    public toggleExplainRemove = () => {
+        this.explainRemove = !this.explainRemove;
+    }
+
+    public showToast = (message: string, intent: Intent, icon: IconName) => {
         this.toaster.show({
             'message': message,
             'intent': intent,

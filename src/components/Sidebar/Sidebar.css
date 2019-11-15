@@ -1,7 +1,27 @@
 .sidebar {
     width: 350px;
     min-height: calc(100vh - 50px);
+    max-height: calc(100vh - 50px);
     padding: 20px;
     background-color: #f6f6f6;
     box-shadow: inset 3px 0 4px -2px #ccc;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebarTreeItems {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.sidebar .bp3-card {
+    padding: 14px;
+}
+
+.sidebar .explainCheckbox {
+    margin-top: 14px;
+}
+
+.sidebar .explainCheckbox:not(:last-child) {
+    margin-bottom: 0;
 }
