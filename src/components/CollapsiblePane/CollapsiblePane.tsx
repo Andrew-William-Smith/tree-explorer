@@ -31,21 +31,23 @@ export default class CollapsiblePane extends React.Component<ICollapsiblePanePro
         // Satisfy the type-checker, which stumbles on ternaries
         let collapseClass = this.state.isOpen ? '' : 'collapsiblePaneCollapsed';
 
-        return <Card className={this.props.className}>
-            <div className={`collapsiblePaneHeading ${collapseClass}`} onClick={this.togglePaneOpen}>
-                <Icon icon={IconNames.CHEVRON_DOWN} />
-                <span className="collapsiblePaneTitleActions">
-                    <span className="collapsiblePaneTitleActionsLeft">
-                        { this.props.titleActionsLeft }
+        return (
+            <Card className={this.props.className}>
+                <div className={`collapsiblePaneHeading ${collapseClass}`} onClick={this.togglePaneOpen}>
+                    <Icon icon={IconNames.CHEVRON_DOWN} />
+                    <span className="collapsiblePaneTitleActions">
+                        <span className="collapsiblePaneTitleActionsLeft">
+                            { this.props.titleActionsLeft }
+                        </span>
+                        <span className="collapsiblePaneTitleActionsRight">
+                            { this.props.titleActionsRight }
+                        </span>
                     </span>
-                    <span className="collapsiblePaneTitleActionsRight">
-                        { this.props.titleActionsRight }
-                    </span>
-                </span>
-            </div>
-            <Collapse className="collapsiblePaneBody" isOpen={this.state.isOpen}>
-                { this.props.children }
-            </Collapse>
-        </Card>;
+                </div>
+                <Collapse className="collapsiblePaneBody" isOpen={this.state.isOpen}>
+                    { this.props.children }
+                </Collapse>
+            </Card>
+        );
     }
 }
