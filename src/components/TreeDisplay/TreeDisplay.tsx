@@ -19,13 +19,10 @@ interface ITreeDisplayState {
 export default class TreeDisplay extends React.Component<ITreeDisplayProps, ITreeDisplayState> {
     /** Whether connections have been rendered for the last update of this tree. */
     private renderedConnections: boolean;
-    /** How far the user has scrolled in this view. */
-    private scrollPosition: { x: number, y: number };
 
     constructor(props: ITreeDisplayProps) {
         super(props);
         this.renderedConnections = false;
-        this.scrollPosition = { x: 0, y: 0 };
         this.state = {
             connectionLines: []
         };
@@ -79,20 +76,12 @@ export default class TreeDisplay extends React.Component<ITreeDisplayProps, ITre
 
         return (
             <div className="treeDisplayConnection" key={key} style={{
-                left: leftPos - this.scrollPosition.x,
-                top: (xDiff > 0 ? parentAnchor.y : childAnchor.y) - this.scrollPosition.y,
+                left: leftPos,
+                top: xDiff > 0 ? parentAnchor.y : childAnchor.y,
                 width: length,
                 transform: `rotate(${angle}rad)`
             }}></div>
         );
-    };
-
-    private handleScroll = (evt: React.UIEvent<HTMLDivElement>): void => {
-        this.scrollPosition = {
-            x: evt.currentTarget.scrollLeft,
-            y: evt.currentTarget.scrollTop
-        };
-        this.renderConnections();
     };
 
     componentDidUpdate(): void {
@@ -101,8 +90,8 @@ export default class TreeDisplay extends React.Component<ITreeDisplayProps, ITre
 
     render(): React.ReactNode {
         return (
-            <div className="treeDisplay" onScroll={this.handleScroll}>
-                {this.props.applicationStore!.tree.size}
+            <div className="treeDisplay">
+                <div className="hiddenSize">{this.props.applicationStore!.tree.size}</div>
                 <TreeNode node={this.props.applicationStore!.tree.root} />
                 {this.state.connectionLines}
             </div>

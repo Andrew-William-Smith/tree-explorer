@@ -5,6 +5,7 @@
     padding: 20px;
     overflow: scroll;
     display: inherit;
+    position: relative;
 }
 
 .treeDisplayConnection {
@@ -13,4 +14,8 @@
     background-color: #aaa;
     transform-origin: left;
     z-index: -1;
+}
+
+.hiddenSize {
+    visibility: hidden;
 }
