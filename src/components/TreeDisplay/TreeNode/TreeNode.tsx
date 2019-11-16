@@ -12,28 +12,36 @@ interface ITreeNodeProps {
 
 export default class TreeNode extends React.Component<ITreeNodeProps, {}> {
     private ownRef: React.RefObject<any>;
-    private leftConnectionRef: React.RefObject<any>;
-    private rightConnectionRef: React.RefObject<any>;
 
     constructor(props: ITreeNodeProps) {
         super(props);
         this.ownRef = React.createRef();
-        this.leftConnectionRef = React.createRef();
-        this.rightConnectionRef = React.createRef();
     }
 
-    componentDidUpdate(): void {
+    /**
+     * Set the rendering properties of the underlying BinaryTreeNode for this
+     * node.  Used to trigger connection rendering.
+     */
+    private setRenderProps = () => {
         // Set anchor coordinates to allow connections to be drawn
         let bounds = this.ownRef.current.getBoundingClientRect();
         let xCoordinate = this.ownRef.current.offsetLeft + bounds.width / 2;
-        this.props.node.topAnchor = {
+        this.props.node.renderProps.topAnchor = {
             x: xCoordinate,
             y: this.ownRef.current.offsetTop
         };
-        this.props.node.bottomAnchor = {
+        this.props.node.renderProps.bottomAnchor = {
             x: xCoordinate,
             y: this.ownRef.current.offsetTop + bounds.height
         };
+    };
+
+    componentDidMount(): void {
+        this.setRenderProps();
+    }
+
+    componentDidUpdate(): void {
+        this.setRenderProps();
     }
 
     render(): React.ReactNode {

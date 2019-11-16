@@ -7,7 +7,10 @@
     display: inherit;
 }
 
-.treeDisplayConnections {
-    position: fixed;
+.treeDisplayConnection {
+    position: absolute;
+    height: 2px;
+    background-color: #aaa;
+    transform-origin: left;
     z-index: -1;
 }

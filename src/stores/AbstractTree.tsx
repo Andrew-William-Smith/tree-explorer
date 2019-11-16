@@ -1,5 +1,13 @@
 import { observable } from 'mobx';
 
+/** Properties of binary tree nodes used exclusively for rendering. */
+interface IBinaryTreeNodeRender {
+    /** The position of the center-top anchor of this node. */
+    topAnchor: { x: number, y: number };
+    /** The position of the center-bottom anchor of this node. */
+    bottomAnchor: { x: number, y: number };
+}
+
 /**
  * A single node within a binary search tree.  Stores a colour to aid in
  * implementing self-balancing trees.
@@ -13,17 +21,12 @@ export class BinaryTreeNode {
     leftChild: BinaryTreeNode | null;
     /** The subordinate node stored to the right of this node. */
     rightChild: BinaryTreeNode | null;
-
-    /** The position of the center-top anchor of this node. */
-    topAnchor: { x: number, y: number };
-    /** The position of the center-bottom anchor of this node. */
-    bottomAnchor: { x: number, y: number };
+    /** Rendering properties for this node. */
+    renderProps: IBinaryTreeNodeRender;
 
     constructor(value: number | null, colour: string = "#000") {
         this.value = value;
         this.colour = colour;
-        this.topAnchor = { x: 0, y: 0 };
-        this.bottomAnchor = { x: 0, y: 0 };
 
         // If the value is non-null, create children
         if (this.value !== null) {
@@ -33,6 +36,12 @@ export class BinaryTreeNode {
             this.leftChild = null;
             this.rightChild = null;
         }
+
+        // Set initial rendering properties for this node
+        this.renderProps = {
+            topAnchor: { x: 0, y: 0 },
+            bottomAnchor: { x: 0, y: 0 }
+        };
     }
 }
 
