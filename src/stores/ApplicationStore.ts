@@ -1,10 +1,14 @@
 import { action, observable } from 'mobx';
 import { Intent, IToaster, Position, Toaster } from '@blueprintjs/core';
 import { IconNames, IconName } from '@blueprintjs/icons';
+import { AbstractTree } from './AbstractTree';
+import NaiveTree from './NaiveTree';
 
 export interface IApplicationStore {
     /** Array of all items stored in the current application state. */
-    items: Array<string>;
+    items: Array<number>;
+    /** Tree currently being displayed and modified. */
+    tree: AbstractTree;
     /** Whether to explain additions to the tree. */
     explainAdd: boolean;
     /** Whether to explain deletions from the tree. */
@@ -12,7 +16,8 @@ export interface IApplicationStore {
 }
 
 export default class ApplicationStore implements IApplicationStore {
-    @observable items: Array<string>;
+    @observable items: Array<number>;
+    @observable tree: AbstractTree;
     @observable explainAdd: boolean;
     @observable explainRemove: boolean;
     /** Used to display toast notifications within this application. */
@@ -20,6 +25,7 @@ export default class ApplicationStore implements IApplicationStore {
 
     constructor() {
         this.items = [];
+        this.tree = new NaiveTree();
         this.explainAdd = true;
         this.explainRemove = true;
         // Show toast notifications in the top right corner
@@ -36,12 +42,13 @@ export default class ApplicationStore implements IApplicationStore {
      * @param item The item to which to add to the trees.
      */
     @action.bound
-    public addItem = (item: string) => {
+    public addItem = (item: number) => {
         if (this.items.includes(item)) {
             this.showToast(`Cannot add duplicate item "${item}" to tree.`,
                 Intent.WARNING, IconNames.WARNING_SIGN);
         } else {
             this.items.push(item);
+            this.tree.addItem(item, false);
         }
     };
 

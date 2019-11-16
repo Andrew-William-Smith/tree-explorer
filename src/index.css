@@ -7,6 +7,10 @@ body {
   color: black;
 }
 
+.treeTypeTabs {
+  margin-left: 20px;
+}
+
 .appBody {
   display: flex;
   flex-direction: row;

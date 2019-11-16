@@ -1,0 +1,8 @@
+.treeDisplay {
+    min-height: calc(100vh - 50px);
+    max-height: calc(100vh - 50px);
+    flex-grow: 1;
+    padding: 20px;
+    overflow: scroll;
+    display: inherit;
+}

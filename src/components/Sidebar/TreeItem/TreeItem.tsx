@@ -6,7 +6,7 @@ import ApplicationStore from '../../../stores/ApplicationStore';
 import './TreeItem.css';
 
 interface ITreeItemProps {
-    value: string;
+    value: number;
     index: number;
     applicationStore?: ApplicationStore;
 }

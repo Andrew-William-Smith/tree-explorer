@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
-import { Card, Checkbox, Divider, InputGroup } from '@blueprintjs/core';
+import { Card, Checkbox, Divider, NumericInput } from '@blueprintjs/core';
 
 import ApplicationStore from '../../stores/ApplicationStore';
 import TreeItem from './TreeItem/TreeItem';
@@ -18,7 +18,7 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
         if (evt.key === 'Enter') {
             let newItem = evt.currentTarget.value;
             if (newItem !== '') {
-                this.props.applicationStore!.addItem(newItem);
+                this.props.applicationStore!.addItem(+newItem);
                 evt.currentTarget.value = '';
             }
         }
@@ -27,7 +27,7 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
     render(): React.ReactNode {
         // Generate a list of the items in this tree
         let treeItemList = this.props.applicationStore!.items.map((item, idx) => {
-            return <TreeItem value={item} index={idx} />
+            return <TreeItem value={item} index={idx} key={item} />
         });
         let treeItems = <div className="sidebarTreeItems">{treeItemList}</div>;
 
@@ -38,7 +38,7 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
 
         return (
             <div className="sidebar">
-                <InputGroup leftIcon="new-object" placeholder="Add an item" onKeyUp={this.addTreeItem} />
+                <NumericInput leftIcon="new-object" placeholder="Add an item" onKeyUp={this.addTreeItem} />
                 <div>
                     <Checkbox className="explainCheckbox" checked={this.props.applicationStore!.explainAdd}
                         label="Explain additions" onChange={this.props.applicationStore!.toggleExplainAdd} />

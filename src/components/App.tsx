@@ -1,10 +1,11 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
 
-import { Alignment, Navbar, NavbarGroup, NavbarHeading } from '@blueprintjs/core';
+import { Alignment, Navbar, NavbarGroup, NavbarHeading, Tab, Tabs } from '@blueprintjs/core';
 
 import ApplicationStore from '../stores/ApplicationStore';
 import Sidebar from './Sidebar/Sidebar';
+import TreeDisplay from './TreeDisplay/TreeDisplay';
 
 interface IAppProps {
     applicationStore?: ApplicationStore
@@ -20,6 +21,13 @@ export default class App extends React.Component<IAppProps, {}> {
                     <NavbarGroup align={Alignment.LEFT}>
                         <NavbarHeading><strong>Tree Explorer</strong></NavbarHeading>
                     </NavbarGroup>
+                    <NavbarGroup className="treeTypeTabs" align={Alignment.LEFT}>
+                        <Tabs animate large>
+                            <Tab id="naiveTree">Na&iuml;ve Tree</Tab>
+                            <Tab id="redBlackTree">Red/Black Tree</Tab>
+                            <Tab id="avlTree">AVL Tree</Tab>
+                        </Tabs>
+                    </NavbarGroup>
                     <NavbarGroup align={Alignment.RIGHT}>
                         <a className="ghLink" href="https://github.com/Andrew-William-Smith/tree-explorer" target="_blank" rel="noopener noreferrer">
                             View on GitHub
@@ -27,8 +35,7 @@ export default class App extends React.Component<IAppProps, {}> {
                     </NavbarGroup>
                 </Navbar>
                 <div className="appBody">
-                    {/* TODO: Actual tree contents */}
-                    <div style={{flexGrow: 1}}></div>
+                    <TreeDisplay />
                     <Sidebar />
                 </div>
             </div>
