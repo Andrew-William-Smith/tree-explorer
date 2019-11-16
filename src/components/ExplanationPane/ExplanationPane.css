@@ -1,0 +1,11 @@
+.explanationCard {
+    padding: 14px !important;
+    float: right;
+    display: block;
+    margin-left: auto;
+    max-width: 500px;
+}
+
+.explanationCard .actionButtons {
+    float: right;
+}

@@ -1,4 +1,7 @@
+import React from 'react';
 import { observable } from 'mobx';
+
+type ExplainPromise = (title: string, message: React.ReactElement, terminal?: boolean) => Promise<any>;
 
 /** Properties of binary tree nodes used exclusively for rendering. */
 interface IBinaryTreeNodeRender {
@@ -70,6 +73,8 @@ export abstract class AbstractTree {
     root: BinaryTreeNode;
     /** The size of this tree, used to determine when to rerender. */
     @observable size: number;
+    /** The function used to explain steps of tree operations. */
+    protected explainStep: ExplainPromise;
 
     /**
      * Constructor for a binary search tree.  If items are specified, add them
@@ -77,9 +82,10 @@ export abstract class AbstractTree {
      * 
      * @param items List of items to be added to this binary search tree.
      */
-    constructor(items: Array<number> = []) {
+    constructor(explain: ExplainPromise, items: Array<number> = []) {
         this.root = new BinaryTreeNode(null);
         this.size = 0;
+        this.explainStep = explain;
         items.forEach(item => this.addItem(item, false));
     }
 

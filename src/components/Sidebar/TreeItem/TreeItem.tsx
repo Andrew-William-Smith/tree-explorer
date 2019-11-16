@@ -8,6 +8,7 @@ import './TreeItem.css';
 interface ITreeItemProps {
     value: number;
     index: number;
+    disabled: boolean;
     applicationStore?: ApplicationStore;
 }
 
@@ -32,8 +33,8 @@ export default class TreeItem extends React.Component<ITreeItemProps, {}> {
             <div className="sidebarTreeItem">
                 <div className="treeItemContents">{this.props.value}</div>
                 <ButtonGroup>
-                    <Button onClick={this.reinsertNode}>Re-insert</Button>
-                    <Button intent={Intent.DANGER} onClick={this.removeNode}>Remove</Button>
+                    <Button onClick={this.reinsertNode} disabled={this.props.disabled}>Re-insert</Button>
+                    <Button intent={Intent.DANGER} onClick={this.removeNode} disabled={this.props.disabled}>Remove</Button>
                 </ButtonGroup>
             </div>
         );

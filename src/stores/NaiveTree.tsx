@@ -1,25 +1,34 @@
-import { AbstractTree, BinaryTreeNode } from './AbstractTree';
+import React from 'react';
 import { action } from 'mobx';
+
+import { AbstractTree, BinaryTreeNode } from './AbstractTree';
 
 export default class NaiveTree extends AbstractTree {
     @action.bound
     public addItem(item: number, explain: boolean): void {
-        this.root = this.addRecursive(item, this.root, explain);
+        this.addRecursive(item, this.root, explain).then(newRoot => {
+            this.root = newRoot;
+            this.size++;
+        });
     }
 
     @action.bound
-    private addRecursive(item: number, node: BinaryTreeNode, explain: boolean): BinaryTreeNode {
+    private async addRecursive(item: number, node: BinaryTreeNode, explain: boolean): Promise<BinaryTreeNode> {
         // We have reached a dead end, add here
         if (node.value === null) {
-            this.size++;
+            await this.explainStep('Position found', <div>
+                We have found a position at which we can insert our node.
+                We shall do so, finishing our insertion operation.
+            </div>, true);
             return new BinaryTreeNode(item);
         }
 
         // Otherwise, determine which direction to travel: left if less than, right if greater
-        if (item < node.value)
-            node.leftChild = this.addRecursive(item, node.leftChild!, explain);
+        if (item < node.value) {
+            node.leftChild = await this.addRecursive(item, node.leftChild!, explain);
+        }
         else if (item > node.value)
-            node.rightChild = this.addRecursive(item, node.rightChild!, explain);
+            node.rightChild = await this.addRecursive(item, node.rightChild!, explain);
         return node;
     }
 

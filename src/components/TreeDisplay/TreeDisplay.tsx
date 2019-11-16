@@ -5,6 +5,7 @@ import './TreeDisplay.css';
 import ApplicationStore from '../../stores/ApplicationStore';
 import { BinaryTreeNode } from '../../stores/AbstractTree';
 import TreeNode from './TreeNode/TreeNode';
+import ExplanationPane from '../ExplanationPane/ExplanationPane';
 
 interface ITreeDisplayProps {
     applicationStore?: ApplicationStore;
@@ -89,11 +90,13 @@ export default class TreeDisplay extends React.Component<ITreeDisplayProps, ITre
     };
 
     render(): React.ReactNode {
+        console.log(this.props.applicationStore!.tree.root);
         return (
             <div className="treeDisplay">
                 <div className="hiddenSize">{this.props.applicationStore!.tree.size}</div>
                 <TreeNode node={this.props.applicationStore!.tree.root} />
                 {this.state.connectionLines}
+                <ExplanationPane />
             </div>
         );
     }
