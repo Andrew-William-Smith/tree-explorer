@@ -8,18 +8,18 @@ export default class NaiveTree extends AbstractTree {
     }
 
     @action.bound
-    private addRecursive(item: number, node: BinaryTreeNode | null, explain: boolean): BinaryTreeNode {
+    private addRecursive(item: number, node: BinaryTreeNode, explain: boolean): BinaryTreeNode {
         // We have reached a dead end, add here
-        if (node === null) {
+        if (node.value === null) {
             this.size++;
             return new BinaryTreeNode(item);
         }
 
         // Otherwise, determine which direction to travel: left if less than, right if greater
         if (item < node.value)
-            node.leftChild = this.addRecursive(item, node.leftChild, explain);
+            node.leftChild = this.addRecursive(item, node.leftChild!, explain);
         else if (item > node.value)
-            node.rightChild = this.addRecursive(item, node.rightChild, explain);
+            node.rightChild = this.addRecursive(item, node.rightChild!, explain);
         return node;
     }
 

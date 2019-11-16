@@ -6,3 +6,8 @@
     overflow: scroll;
     display: inherit;
 }
+
+.treeDisplayConnections {
+    position: fixed;
+    z-index: -1;
+}

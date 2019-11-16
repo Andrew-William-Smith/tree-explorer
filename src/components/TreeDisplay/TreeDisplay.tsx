@@ -6,7 +6,7 @@ import ApplicationStore from '../../stores/ApplicationStore';
 import TreeNode from './TreeNode/TreeNode';
 
 interface ITreeDisplayProps {
-    applicationStore?: ApplicationStore
+    applicationStore?: ApplicationStore;
 }
 
 @inject('applicationStore')

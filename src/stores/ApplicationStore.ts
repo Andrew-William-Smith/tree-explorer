@@ -28,6 +28,7 @@ export default class ApplicationStore implements IApplicationStore {
         this.tree = new NaiveTree();
         this.explainAdd = true;
         this.explainRemove = true;
+
         // Show toast notifications in the top right corner
         this.toaster = Toaster.create({
             'position': Position.BOTTOM_RIGHT

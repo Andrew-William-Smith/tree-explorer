@@ -6,7 +6,7 @@ import { observable } from 'mobx';
  */
 export class BinaryTreeNode {
     /** The value stored in this tree node. */
-    value: number;
+    value: number | null;
     /** The colour of this node. */
     colour: string;
     /** The subordinate node stored to the left of this node. */
@@ -14,11 +14,25 @@ export class BinaryTreeNode {
     /** The subordinate node stored to the right of this node. */
     rightChild: BinaryTreeNode | null;
 
-    constructor(value: number, colour: string = "#000") {
+    /** The position of the center-top anchor of this node. */
+    topAnchor: { x: number, y: number };
+    /** The position of the center-bottom anchor of this node. */
+    bottomAnchor: { x: number, y: number };
+
+    constructor(value: number | null, colour: string = "#000") {
         this.value = value;
         this.colour = colour;
-        this.leftChild = null;
-        this.rightChild = null;
+        this.topAnchor = { x: 0, y: 0 };
+        this.bottomAnchor = { x: 0, y: 0 };
+
+        // If the value is non-null, create children
+        if (this.value !== null) {
+            this.leftChild = new BinaryTreeNode(null);
+            this.rightChild = new BinaryTreeNode(null);
+        } else {
+            this.leftChild = null;
+            this.rightChild = null;
+        }
     }
 }
 
@@ -28,7 +42,7 @@ export class BinaryTreeNode {
  */
 export abstract class AbstractTree {
     /** The root of this tree. */
-    root: BinaryTreeNode | null;
+    root: BinaryTreeNode;
     /** The size of this tree, used to determine when to rerender. */
     @observable size: number;
 
@@ -39,7 +53,7 @@ export abstract class AbstractTree {
      * @param items List of items to be added to this binary search tree.
      */
     constructor(items: Array<number> = []) {
-        this.root = null;
+        this.root = new BinaryTreeNode(null);
         this.size = 0;
         items.forEach(item => this.addItem(item, false));
     }
