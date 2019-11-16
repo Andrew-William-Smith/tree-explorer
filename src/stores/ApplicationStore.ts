@@ -49,7 +49,7 @@ export default class ApplicationStore implements IApplicationStore {
                 Intent.WARNING, IconNames.WARNING_SIGN);
         } else {
             this.items.push(item);
-            this.tree.addItem(item, false);
+            this.tree.addItem(item, this.explainAdd);
         }
     };
 
@@ -61,7 +61,8 @@ export default class ApplicationStore implements IApplicationStore {
      */
     @action.bound
     public removeItemAtIndex = (index: number) => {
-        this.items.splice(index, 1);
+        let [removed] = this.items.splice(index, 1);
+        this.tree.removeItem(removed, this.explainRemove);
     }
 
     /**

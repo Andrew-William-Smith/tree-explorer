@@ -6,6 +6,11 @@
     overflow: scroll;
     display: inherit;
     position: relative;
+    align-items: start;
+}
+
+.treeDisplay .treeDisplayEmpty {
+    padding: 14px;
 }
 
 .treeDisplayConnection {

@@ -43,6 +43,22 @@ export class BinaryTreeNode {
             bottomAnchor: { x: 0, y: 0 }
         };
     }
+
+    /** Determine whether this tree node represents a leaf. */
+    public isLeaf(): boolean {
+        return this.leftChild !== null && this.leftChild.value === null
+            && this.rightChild !== null && this.rightChild.value === null;
+    }
+
+    /** Determine the value of the smallest child of this node. */
+    public minChild(): number {
+        let curNode: BinaryTreeNode = this;
+        // Navigate as far left as possible
+        while (curNode.leftChild !== null && curNode.leftChild.value !== null)
+            curNode = curNode.leftChild;
+        // Once we reach a dead end, we have found the minimum
+        return curNode.value!;
+    }
 }
 
 /**
