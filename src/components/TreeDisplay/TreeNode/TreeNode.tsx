@@ -45,16 +45,21 @@ export default class TreeNode extends React.Component<ITreeNodeProps, {}> {
     }
 
     render(): React.ReactNode {
+        let highlightColour = this.props.node.renderProps.highlightColour;
+
         // If this node is non-null, navigate down the tree
         if (this.props.node.value !== null) {
             let leftNode = <TreeNode node={this.props.node.leftChild!} />;
             let rightNode = <TreeNode node={this.props.node.rightChild!} />;
 
+            // Determine style for this node
+            let nodeStyle = highlightColour === null
+                ? { color: this.props.node.colour, borderColor: this.props.node.colour }
+                : { color: 'white', backgroundColor: highlightColour, borderColor: highlightColour };
+
             return (
                 <div className="subtreeGroup">
-                    <div ref={this.ownRef} className="treeNode"
-                        style={{color: this.props.node.colour, borderColor: this.props.node.colour}}
-                    >
+                    <div ref={this.ownRef} className="treeNode" style={nodeStyle}>
                         {this.props.node.value}
                     </div>
                     <div className="treeNodeChildren">
@@ -66,8 +71,11 @@ export default class TreeNode extends React.Component<ITreeNodeProps, {}> {
         }
 
         // The node is null, render a placeholder
+        let nodeStyle = highlightColour !== null
+            ? { color: highlightColour, borderColor: highlightColour, backgroundColor: `${highlightColour}11` }
+            : {};
         return (
-            <div ref={this.ownRef} className="treeNode nullNode">
+            <div ref={this.ownRef} className="treeNode nullNode" style={nodeStyle}>
                 <Icon icon={IconNames.DISABLE} />
             </div>
         );

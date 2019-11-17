@@ -4,8 +4,10 @@
     display: block;
     margin-left: auto;
     max-width: 500px;
+    min-width: 500px;
 }
 
 .explanationCard .actionButtons {
+    margin-top: 8px;
     float: right;
 }

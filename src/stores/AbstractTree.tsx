@@ -9,6 +9,8 @@ interface IBinaryTreeNodeRender {
     topAnchor: { x: number, y: number };
     /** The position of the center-bottom anchor of this node. */
     bottomAnchor: { x: number, y: number };
+    /** The colour with which to highlight this node. */
+    highlightColour: string | null;
 }
 
 /**
@@ -19,7 +21,7 @@ export class BinaryTreeNode {
     /** The value stored in this tree node. */
     value: number | null;
     /** The colour of this node. */
-    colour: string;
+    @observable colour: string;
     /** The subordinate node stored to the left of this node. */
     leftChild: BinaryTreeNode | null;
     /** The subordinate node stored to the right of this node. */
@@ -43,7 +45,8 @@ export class BinaryTreeNode {
         // Set initial rendering properties for this node
         this.renderProps = {
             topAnchor: { x: 0, y: 0 },
-            bottomAnchor: { x: 0, y: 0 }
+            bottomAnchor: { x: 0, y: 0 },
+            highlightColour: null
         };
     }
 
@@ -72,9 +75,14 @@ export abstract class AbstractTree {
     /** The root of this tree. */
     root: BinaryTreeNode;
     /** The size of this tree, used to determine when to rerender. */
-    @observable size: number;
+    size: number;
+    /** The number of operations performed on this tree, used to determine when
+     * to rerender. */
+    @observable numOperations: number;
     /** The function used to explain steps of tree operations. */
-    protected explainStep: ExplainPromise;
+    protected explainFunction: ExplainPromise;
+    /** A list of nodes in this tree that are highlighted. */
+    highlightedNodes: Array<BinaryTreeNode>;
 
     /**
      * Constructor for a binary search tree.  If items are specified, add them
@@ -85,8 +93,21 @@ export abstract class AbstractTree {
     constructor(explain: ExplainPromise, items: Array<number> = []) {
         this.root = new BinaryTreeNode(null);
         this.size = 0;
-        this.explainStep = explain;
+        this.numOperations = 0;
+        this.explainFunction = explain;
+        this.highlightedNodes = [];
         items.forEach(item => this.addItem(item, false));
+    }
+
+    protected async explainStep(title: string, message: React.ReactElement, terminal: boolean = false): Promise<any> {
+        this.numOperations++;
+        await this.explainFunction(title, message, terminal);
+        // Unhighlight all nodes from this step
+        this.highlightedNodes.filter(node => {
+            node.renderProps.highlightColour = null;
+            return false;
+        });
+        this.numOperations++;
     }
 
     /**

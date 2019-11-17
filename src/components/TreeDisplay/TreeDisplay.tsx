@@ -90,10 +90,9 @@ export default class TreeDisplay extends React.Component<ITreeDisplayProps, ITre
     };
 
     render(): React.ReactNode {
-        console.log(this.props.applicationStore!.tree.root);
         return (
             <div className="treeDisplay">
-                <div className="hiddenSize">{this.props.applicationStore!.tree.size}</div>
+                <div className="hiddenOps">{this.props.applicationStore!.tree.numOperations}</div>
                 <TreeNode node={this.props.applicationStore!.tree.root} />
                 {this.state.connectionLines}
                 <ExplanationPane />

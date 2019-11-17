@@ -134,8 +134,10 @@ export default class ApplicationStore implements IApplicationStore {
         this.explanationBody = explanation;
         this.explanationTerminal = terminal;
 
-        return new Promise((resolve, reject) => {
-            this.explanationPromise = { resolve, reject };
-        });
+        if (this.explaining) {
+            return new Promise((resolve, reject) => {
+                this.explanationPromise = { resolve, reject };
+            });
+        }
     }
 }

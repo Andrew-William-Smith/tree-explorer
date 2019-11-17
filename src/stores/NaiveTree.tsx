@@ -2,6 +2,7 @@ import React from 'react';
 import { action } from 'mobx';
 
 import { AbstractTree, BinaryTreeNode } from './AbstractTree';
+import HighlightNode, { HighlightColours } from '../components/HighlightNode/HighlightNode';
 
 export default class NaiveTree extends AbstractTree {
     @action.bound
@@ -9,6 +10,7 @@ export default class NaiveTree extends AbstractTree {
         this.addRecursive(item, this.root, explain).then(newRoot => {
             this.root = newRoot;
             this.size++;
+            this.numOperations++;
         });
     }
 
@@ -17,13 +19,23 @@ export default class NaiveTree extends AbstractTree {
         // We have reached a dead end, add here
         if (node.value === null) {
             await this.explainStep('Position found', <div>
-                We have found a position at which we can insert our node.
-                We shall do so, finishing our insertion operation.
+                We have found a
+                    <HighlightNode node={node} colour={HighlightColours.GREEN}>position </HighlightNode>
+                at which we can insert our node. We shall do so, finishing our insertion operation.
             </div>, true);
             return new BinaryTreeNode(item);
         }
 
         // Otherwise, determine which direction to travel: left if less than, right if greater
+        await this.explainStep('Determine direction', <div>
+            We need to determine in which direction to navigate down the tree in order to add our node.
+            As the value to add, <strong>{item}</strong>, is less than the value of the current node,
+                <HighlightNode node={node} colour={HighlightColours.GREEN}>{node.value}</HighlightNode>,
+            we shall navigate to the
+                <HighlightNode node={item < node.value ? node.leftChild! : node.rightChild!} colour={HighlightColours.BLUE}>
+                    <strong>{item < node.value ? "left" : "right"}</strong>
+                </HighlightNode>.
+        </div>);
         if (item < node.value) {
             node.leftChild = await this.addRecursive(item, node.leftChild!, explain);
         }
