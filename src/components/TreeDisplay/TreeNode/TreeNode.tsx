@@ -10,12 +10,24 @@ interface ITreeNodeProps {
     node: BinaryTreeNode;
 }
 
-export default class TreeNode extends React.Component<ITreeNodeProps, {}> {
+interface ITreeNodeState {
+    color: string;
+    borderColor: string;
+    backgroundColor: string;
+}
+
+export default class TreeNode extends React.Component<ITreeNodeProps, ITreeNodeState> {
     private ownRef: React.RefObject<any>;
 
     constructor(props: ITreeNodeProps) {
         super(props);
         this.ownRef = React.createRef();
+
+        this.state = {
+            color: this.props.node.colour,
+            borderColor: this.props.node.colour,
+            backgroundColor: 'white'
+        };
     }
 
     /**
@@ -36,6 +48,26 @@ export default class TreeNode extends React.Component<ITreeNodeProps, {}> {
         };
     };
 
+    static getDerivedStateFromProps(nextProps: ITreeNodeProps, prevState: ITreeNodeState) {
+        let nodeColour = nextProps.node.colour;
+        let highlightColour = nextProps.node.renderProps.highlightColour;
+        let highlighted = highlightColour !== null;
+
+        if (nextProps.node.value === null) {
+            return {
+                color: highlighted ? highlightColour : '#aaa',
+                borderColor: highlighted ? highlightColour : '#ddd',
+                backgroundColor: highlighted ? `${highlightColour}11` : 'white'
+            };
+        } else {
+            return {
+                color: highlighted ? 'white' : nodeColour,
+                borderColor: highlighted ? highlightColour : nodeColour,
+                backgroundColor: highlighted ? highlightColour : 'white'
+            }
+        }
+    };
+
     componentDidMount(): void {
         this.setRenderProps();
     }
@@ -45,21 +77,14 @@ export default class TreeNode extends React.Component<ITreeNodeProps, {}> {
     }
 
     render(): React.ReactNode {
-        let highlightColour = this.props.node.renderProps.highlightColour;
-
         // If this node is non-null, navigate down the tree
         if (this.props.node.value !== null) {
             let leftNode = <TreeNode node={this.props.node.leftChild!} />;
             let rightNode = <TreeNode node={this.props.node.rightChild!} />;
 
-            // Determine style for this node
-            let nodeStyle = highlightColour === null
-                ? { color: this.props.node.colour, borderColor: this.props.node.colour }
-                : { color: 'white', backgroundColor: highlightColour, borderColor: highlightColour };
-
             return (
                 <div className="subtreeGroup">
-                    <div ref={this.ownRef} className="treeNode" style={nodeStyle}>
+                    <div ref={this.ownRef} className="treeNode" style={this.state}>
                         {this.props.node.value}
                     </div>
                     <div className="treeNodeChildren">
@@ -71,11 +96,8 @@ export default class TreeNode extends React.Component<ITreeNodeProps, {}> {
         }
 
         // The node is null, render a placeholder
-        let nodeStyle = highlightColour !== null
-            ? { color: highlightColour, borderColor: highlightColour, backgroundColor: `${highlightColour}11` }
-            : {};
         return (
-            <div ref={this.ownRef} className="treeNode nullNode" style={nodeStyle}>
+            <div ref={this.ownRef} className="treeNode nullNode" style={this.state}>
                 <Icon icon={IconNames.DISABLE} />
             </div>
         );

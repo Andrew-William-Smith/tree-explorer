@@ -1,5 +1,5 @@
 import React from 'react';
-import { observable } from 'mobx';
+import { action, observable } from 'mobx';
 
 type ExplainPromise = (title: string, message: React.ReactElement, terminal?: boolean) => Promise<any>;
 
@@ -27,7 +27,7 @@ export class BinaryTreeNode {
     /** The subordinate node stored to the right of this node. */
     rightChild: BinaryTreeNode | null;
     /** Rendering properties for this node. */
-    renderProps: IBinaryTreeNodeRender;
+    @observable renderProps: IBinaryTreeNodeRender;
 
     constructor(value: number | null, colour: string = "#000") {
         this.value = value;
@@ -57,13 +57,13 @@ export class BinaryTreeNode {
     }
 
     /** Determine the value of the smallest child of this node. */
-    public minChild(): number {
+    public minChild(): BinaryTreeNode {
         let curNode: BinaryTreeNode = this;
         // Navigate as far left as possible
         while (curNode.leftChild !== null && curNode.leftChild.value !== null)
             curNode = curNode.leftChild;
         // Once we reach a dead end, we have found the minimum
-        return curNode.value!;
+        return curNode;
     }
 }
 
@@ -99,15 +99,15 @@ export abstract class AbstractTree {
         items.forEach(item => this.addItem(item, false));
     }
 
+    @action.bound
     protected async explainStep(title: string, message: React.ReactElement, terminal: boolean = false): Promise<any> {
         this.numOperations++;
         await this.explainFunction(title, message, terminal);
         // Unhighlight all nodes from this step
-        this.highlightedNodes.filter(node => {
+        this.highlightedNodes.forEach(node => {
             node.renderProps.highlightColour = null;
-            return false;
         });
-        this.numOperations++;
+        this.highlightedNodes = [];
     }
 
     /**

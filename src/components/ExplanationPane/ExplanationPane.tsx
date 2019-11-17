@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
 
-import { Button, Card, H4, Intent } from '@blueprintjs/core';
+import { Button, ButtonGroup, Card, H4, Intent } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 
 import './ExplanationPane.css';
@@ -23,7 +23,7 @@ export default class ExplanationPane extends React.Component<IExplanationPanePro
     }
 
     /** Advance to the next step of the explanation. */
-    nextStep = () => {
+    nextStep = (continueAnimation: boolean) => {
         let store = this.props.applicationStore!;
         // If this was the last step, end the explanation
         if (store.explanationTerminal) {
@@ -32,7 +32,8 @@ export default class ExplanationPane extends React.Component<IExplanationPanePro
         }
 
         // Resolve the promise to continue
-        store.explanationPromise!.resolve();
+        store.explaining = continueAnimation;
+        store.explanationPromise!.resolve(continueAnimation);
     };
 
     componentDidUpdate() {
@@ -45,8 +46,12 @@ export default class ExplanationPane extends React.Component<IExplanationPanePro
         let store = this.props.applicationStore!;
         let actionButtons = (
             <div className="actionButtons">
-                <Button rightIcon={IconNames.ARROW_RIGHT} intent={Intent.PRIMARY} text="Next"
-                    onClick={this.nextStep} ref={this.continueRef} />
+                <ButtonGroup>
+                    <Button rightIcon={IconNames.FAST_FORWARD} text="Finish"
+                        onClick={() => this.nextStep(false)} />
+                    <Button rightIcon={IconNames.STEP_FORWARD} intent={Intent.PRIMARY} text="Next"
+                        onClick={() => this.nextStep(true)} ref={this.continueRef} />
+                </ButtonGroup>
             </div>
         );
         // Special action button for the last step
@@ -54,7 +59,7 @@ export default class ExplanationPane extends React.Component<IExplanationPanePro
             actionButtons = (
                 <div className="actionButtons">
                     <Button rightIcon={IconNames.TICK} intent={Intent.SUCCESS} text="Finished"
-                        onClick={this.nextStep} ref={this.continueRef} />
+                        onClick={() => this.nextStep(false)} ref={this.continueRef} />
                 </div>
             );
         }
