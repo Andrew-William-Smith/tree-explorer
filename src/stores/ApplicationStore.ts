@@ -79,7 +79,7 @@ export default class ApplicationStore implements IApplicationStore {
         } else {
             this.treeOperating = true;
             this.explaining = this.explainAdd;
-            this.tree.addItem(item, this.explainAdd).then(() => {
+            this.tree.addItem(item).then(() => {
                 this.items.push(item)
                 this.treeOperating = false;
             });
@@ -96,7 +96,7 @@ export default class ApplicationStore implements IApplicationStore {
     public removeItemAtIndex = (index: number) => {
         this.treeOperating = true;
         this.explaining = this.explainRemove;
-        this.tree.removeItem(this.items[index], this.explainRemove).then(() => {
+        this.tree.removeItem(this.items[index]).then(() => {
             this.items.splice(index, 1);
             this.treeOperating = false;
         });

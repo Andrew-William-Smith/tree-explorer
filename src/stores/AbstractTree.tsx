@@ -96,7 +96,7 @@ export abstract class AbstractTree {
         this.numOperations = 0;
         this.explainFunction = explain;
         this.highlightedNodes = [];
-        items.forEach(item => this.addItem(item, false));
+        items.forEach(item => this.addItem(item));
     }
 
     /**
@@ -123,16 +123,14 @@ export abstract class AbstractTree {
      * not already contain this item.
      *
      * @param item The item to add to this tree.
-     * @param explain Whether to explain the steps taken to add the item.
      */
-    public abstract async addItem(item: number, explain: boolean): Promise<void>;
+    public abstract async addItem(item: number): Promise<void>;
 
     /**
      * Remove the specified item from this tree.  It is expected that the tree
      * contains this item.
      *
      * @param item The item to remove from this tree.
-     * @param explain Whether to explain the steps taken to remove the item.
      */
-    public abstract async removeItem(item: number, explain: boolean): Promise<void>;
+    public abstract async removeItem(item: number): Promise<void>;
 }
