@@ -22,5 +22,5 @@
 }
 
 .hiddenOps {
-    visibility: hidden;
+    display: none;
 }

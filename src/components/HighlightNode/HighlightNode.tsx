@@ -22,9 +22,13 @@ interface IHighlightNodeProps {
 @inject('applicationStore')
 @observer
 export default class HighlightNode extends React.Component<IHighlightNodeProps, {}> {
-    render(): React.ReactNode {
+    constructor(props: IHighlightNodeProps) {
+        super(props);
         this.props.node.renderProps.highlightColour = this.props.colour;
         this.props.applicationStore!.tree.highlightedNodes.push(this.props.node);
+    }
+
+    render(): React.ReactNode {
         return <span style={{color: this.props.colour, fontWeight: 600}}>&#32;{this.props.children}</span>
     }
 }

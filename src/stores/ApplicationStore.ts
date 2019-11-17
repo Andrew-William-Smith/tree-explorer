@@ -135,8 +135,14 @@ export default class ApplicationStore implements IApplicationStore {
         this.explanationTerminal = terminal;
 
         if (this.explaining) {
+            // If explaining, create a user-controllable promise
             return new Promise((resolve, reject) => {
                 this.explanationPromise = { resolve, reject };
+            });
+        } else {
+            // Otherwise, create a timeout-based promise
+            return new Promise((resolve, reject) => {
+                setTimeout(resolve, 150);
             });
         }
     }

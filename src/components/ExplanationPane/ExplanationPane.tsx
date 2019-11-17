@@ -43,33 +43,30 @@ export default class ExplanationPane extends React.Component<IExplanationPanePro
 
     render(): React.ReactNode {
         let store = this.props.applicationStore!;
-        // Only render if there is an explanation ongoing
-        if (store.explaining) {
-            let actionButtons = (
+        let actionButtons = (
+            <div className="actionButtons">
+                <Button rightIcon={IconNames.ARROW_RIGHT} intent={Intent.PRIMARY} text="Next"
+                    onClick={this.nextStep} ref={this.continueRef} />
+            </div>
+        );
+        // Special action button for the last step
+        if (store.explanationTerminal) {
+            actionButtons = (
                 <div className="actionButtons">
-                    <Button rightIcon={IconNames.ARROW_RIGHT} intent={Intent.PRIMARY} text="Next"
+                    <Button rightIcon={IconNames.TICK} intent={Intent.SUCCESS} text="Finished"
                         onClick={this.nextStep} ref={this.continueRef} />
                 </div>
             );
-            // Special action button for the last step
-            if (store.explanationTerminal) {
-                actionButtons = (
-                    <div className="actionButtons">
-                        <Button rightIcon={IconNames.TICK} intent={Intent.SUCCESS} text="Finished"
-                            onClick={this.nextStep} ref={this.continueRef} />
-                    </div>
-                );
-            }
-
-            return (
-                <Card className="explanationCard">
-                    <H4>{store.explanationTitle}</H4>
-                    {store.explanationBody}
-                    {actionButtons}
-                </Card>
-            );
-        } else {
-            return null;
         }
+
+        return (
+            <Card className="explanationCard" style={{
+                display: store.explaining ? 'block' : 'none'
+            }}>
+                <H4>{store.explanationTitle}</H4>
+                {store.explanationBody}
+                {actionButtons}
+            </Card>
+        );
     }
 }
