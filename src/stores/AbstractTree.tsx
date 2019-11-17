@@ -99,6 +99,14 @@ export abstract class AbstractTree {
         items.forEach(item => this.addItem(item, false));
     }
 
+    /**
+     * Show an explanation for the current step of the ongoing operation using
+     * the passed explanation function.
+     *
+     * @param title The title of this step.
+     * @param message The body of the explanation for this step.
+     * @param terminal Whether this is the last step in the operation.
+     */
     @action.bound
     protected async explainStep(title: string, message: React.ReactElement, terminal: boolean = false): Promise<any> {
         this.numOperations++;
@@ -117,7 +125,7 @@ export abstract class AbstractTree {
      * @param item The item to add to this tree.
      * @param explain Whether to explain the steps taken to add the item.
      */
-    public abstract addItem(item: number, explain: boolean): void;
+    public abstract async addItem(item: number, explain: boolean): Promise<void>;
 
     /**
      * Remove the specified item from this tree.  It is expected that the tree
@@ -126,5 +134,5 @@ export abstract class AbstractTree {
      * @param item The item to remove from this tree.
      * @param explain Whether to explain the steps taken to remove the item.
      */
-    public abstract removeItem(item: number, explain: boolean): void;
+    public abstract async removeItem(item: number, explain: boolean): Promise<void>;
 }

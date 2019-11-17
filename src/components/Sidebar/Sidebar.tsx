@@ -26,9 +26,9 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
 
     render(): React.ReactNode {
         // Generate a list of the items in this tree
+        let treeOperating = this.props.applicationStore!.treeOperating;
         let treeItemList = this.props.applicationStore!.items.map((item, idx) => {
-            return <TreeItem value={item} index={idx} key={item}
-                disabled={this.props.applicationStore!.explaining} />
+            return <TreeItem value={item} index={idx} key={item} disabled={treeOperating} />
         });
         let treeItems = <div className="sidebarTreeItems">{treeItemList}</div>;
 
@@ -40,14 +40,14 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
         return (
             <div className="sidebar">
                 <NumericInput leftIcon="new-object" placeholder="Add an item" onKeyUp={this.addTreeItem}
-                    disabled={this.props.applicationStore!.explaining} />
+                    disabled={treeOperating} />
                 <div>
                     <Checkbox className="explainCheckbox" checked={this.props.applicationStore!.explainAdd}
                         label="Explain additions" onChange={this.props.applicationStore!.toggleExplainAdd}
-                        disabled={this.props.applicationStore!.explaining} />
+                        disabled={treeOperating} />
                     <Checkbox className="explainCheckbox" checked={this.props.applicationStore!.explainRemove}
                         label="Explain removals" onChange={this.props.applicationStore!.toggleExplainRemove}
-                        disabled={this.props.applicationStore!.explaining} />
+                        disabled={treeOperating} />
                 </div>
 
                 <Divider />

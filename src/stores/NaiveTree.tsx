@@ -6,12 +6,10 @@ import HighlightNode, { HighlightColours } from '../components/HighlightNode/Hig
 
 export default class NaiveTree extends AbstractTree {
     @action.bound
-    public addItem(item: number, explain: boolean): void {
-        this.addRecursive(item, this.root, explain).then(newRoot => {
-            this.root = newRoot;
-            this.size++;
-            this.numOperations++;
-        });
+    public async addItem(item: number, explain: boolean): Promise<void> {
+        this.root = await this.addRecursive(item, this.root, explain);
+        this.size++;
+        this.numOperations++;
     }
 
     @action.bound
@@ -36,12 +34,10 @@ export default class NaiveTree extends AbstractTree {
     }
 
     @action.bound
-    public removeItem(item: number, explain: boolean): void {
-        this.removeRecursive(item, this.root, explain).then(newRoot => {
-            this.root = newRoot;
-            this.size--;
-            this.numOperations++;
-        });
+    public async removeItem(item: number, explain: boolean): Promise<void> {
+        this.root = await this.removeRecursive(item, this.root, explain);
+        this.size--;
+        this.numOperations++;
     }
 
     @action.bound

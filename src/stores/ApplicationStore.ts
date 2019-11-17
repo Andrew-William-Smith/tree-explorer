@@ -9,6 +9,8 @@ export interface IApplicationStore {
     items: Array<number>;
     /** Tree currently being displayed and modified. */
     tree: AbstractTree;
+    /** Whether a tree operation is currently being performed. */
+    treeOperating: boolean;
 
     /** Whether to explain additions to the tree. */
     explainAdd: boolean;
@@ -29,6 +31,7 @@ export interface IApplicationStore {
 export default class ApplicationStore implements IApplicationStore {
     @observable items: Array<number>;
     @observable tree: AbstractTree;
+    @observable treeOperating: boolean;
 
     @observable explainAdd: boolean;
     @observable explainRemove: boolean;
@@ -44,6 +47,7 @@ export default class ApplicationStore implements IApplicationStore {
     constructor() {
         this.items = [];
         this.tree = new NaiveTree(this.explainStep);
+        this.treeOperating = false;
 
         // Initialise explanation parameters
         this.explainAdd = true;
@@ -73,9 +77,12 @@ export default class ApplicationStore implements IApplicationStore {
             this.showToast(`Cannot add duplicate item "${item}" to tree.`,
                 Intent.WARNING, IconNames.WARNING_SIGN);
         } else {
-            this.items.push(item);
+            this.treeOperating = true;
             this.explaining = this.explainAdd;
-            this.tree.addItem(item, this.explainAdd);
+            this.tree.addItem(item, this.explainAdd).then(() => {
+                this.items.push(item)
+                this.treeOperating = false;
+            });
         }
     };
 
@@ -87,9 +94,12 @@ export default class ApplicationStore implements IApplicationStore {
      */
     @action.bound
     public removeItemAtIndex = (index: number) => {
-        let [removed] = this.items.splice(index, 1);
+        this.treeOperating = true;
         this.explaining = this.explainRemove;
-        this.tree.removeItem(removed, this.explainRemove);
+        this.tree.removeItem(this.items[index], this.explainRemove).then(() => {
+            this.items.splice(index, 1);
+            this.treeOperating = false;
+        });
     }
 
     /**

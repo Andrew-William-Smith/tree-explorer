@@ -33,7 +33,7 @@ export default class ExplanationPane extends React.Component<IExplanationPanePro
 
         // Resolve the promise to continue
         store.explaining = continueAnimation;
-        store.explanationPromise!.resolve(continueAnimation);
+        store.explanationPromise!.resolve();
     };
 
     componentDidUpdate() {
