@@ -24,8 +24,8 @@ export default class App extends React.Component<IAppProps, {}> {
                     <NavbarGroup className="treeTypeTabs" align={Alignment.LEFT}>
                         <Tabs animate large>
                             <Tab id="naiveTree">Na&iuml;ve Tree</Tab>
-                            <Tab id="redBlackTree">Red/Black Tree</Tab>
-                            <Tab id="avlTree">AVL Tree</Tab>
+                            <Tab id="redBlackTree" disabled>Red/Black Tree</Tab>
+                            <Tab id="avlTree" disabled>AVL Tree</Tab>
                         </Tabs>
                     </NavbarGroup>
                     <NavbarGroup align={Alignment.RIGHT}>

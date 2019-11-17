@@ -9,6 +9,11 @@
     flex-direction: column;
 }
 
+.sidebarTraversals {
+    margin-top: -4px;
+    margin-bottom: 20px;
+}
+
 .sidebarTreeItems {
     flex-grow: 1;
     overflow-y: auto;

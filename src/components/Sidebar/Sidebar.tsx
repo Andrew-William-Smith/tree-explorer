@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
-import { Card, Checkbox, Divider, NumericInput } from '@blueprintjs/core';
+import { Button, ButtonGroup, Card, Divider, NumericInput, Switch } from '@blueprintjs/core';
 
 import ApplicationStore from '../../stores/ApplicationStore';
 import TreeItem from './TreeItem/TreeItem';
@@ -25,9 +25,10 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
     };
 
     render(): React.ReactNode {
+        let store = this.props.applicationStore!;
         // Generate a list of the items in this tree
-        let treeOperating = this.props.applicationStore!.treeOperating;
-        let treeItemList = this.props.applicationStore!.items.map((item, idx) => {
+        let treeOperating = store.treeOperating;
+        let treeItemList = store.items.map((item, idx) => {
             return <TreeItem value={item} index={idx} key={item} disabled={treeOperating} />
         });
         let treeItems = <div className="sidebarTreeItems">{treeItemList}</div>;
@@ -42,17 +43,25 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
                 <NumericInput leftIcon="new-object" placeholder="Add an item" onKeyUp={this.addTreeItem}
                     disabled={treeOperating} />
                 <div>
-                    <Checkbox className="explainCheckbox" checked={this.props.applicationStore!.explainAdd}
-                        label="Explain additions" onChange={this.props.applicationStore!.toggleExplainAdd}
-                        disabled={treeOperating} />
-                    <Checkbox className="explainCheckbox" checked={this.props.applicationStore!.explainRemove}
-                        label="Explain removals" onChange={this.props.applicationStore!.toggleExplainRemove}
+                    <Switch className="explainCheckbox" checked={store.explainAdd}
+                        label="Explain additions" onChange={store.toggleExplainAdd}
+                        disabled={treeOperating} inline />
+                    <Switch className="explainCheckbox" checked={store.explainRemove}
+                        label="Explain removals" onChange={store.toggleExplainRemove}
+                        disabled={treeOperating} inline />
+                    <Switch className="explainCheckbox" checked={store.explainTraverse}
+                        label="Explain traversals" onChange={store.toggleExplainTraverse}
                         disabled={treeOperating} />
                 </div>
 
                 <Divider />
 
                 <h2>Tree contents</h2>
+                <ButtonGroup className="sidebarTraversals">
+                    <Button onClick={store.traversePreOrder} disabled={treeOperating}>Pre-Order</Button>
+                    <Button disabled={treeOperating}>In-Order</Button>
+                    <Button disabled={treeOperating}>Post-Order</Button>
+                </ButtonGroup>
                 {treeItems}
             </div>
         );

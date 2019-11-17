@@ -16,6 +16,8 @@ export interface IApplicationStore {
     explainAdd: boolean;
     /** Whether to explain deletions from the tree. */
     explainRemove: boolean;
+    /** Whether to explain traversals of the tree. */
+    explainTraverse: boolean;
     /** Whether an explanation is ongoing. */
     explaining: boolean;
     /** Promise values for the current explanation step. */
@@ -35,6 +37,7 @@ export default class ApplicationStore implements IApplicationStore {
 
     @observable explainAdd: boolean;
     @observable explainRemove: boolean;
+    @observable explainTraverse: boolean;
     @observable explaining: boolean;
     explanationPromise: { resolve: any, reject: any } | null;
     @observable explanationTitle: string;
@@ -52,6 +55,7 @@ export default class ApplicationStore implements IApplicationStore {
         // Initialise explanation parameters
         this.explainAdd = true;
         this.explainRemove = true;
+        this.explainTraverse = true;
         this.explaining = false;
         this.explanationPromise = null;
         this.explanationTitle = '';
@@ -103,6 +107,22 @@ export default class ApplicationStore implements IApplicationStore {
     }
 
     /**
+     * Perform a pre-order traversal of the current tree.
+     */
+    @action.bound
+    public traversePreOrder = async () => {
+        this.treeOperating = true;
+        this.explaining = this.explainTraverse;
+        // Clear items and relist from traversal generator
+        this.items = [];
+        let preOrderGenerator = this.tree.traversePreOrder();
+        for await (const val of preOrderGenerator) {
+            this.items.push(val);
+        }
+        this.treeOperating = false;
+    }
+
+    /**
      * Toggle whether item additions should be explained in detail.
      */
     @action.bound
@@ -116,6 +136,14 @@ export default class ApplicationStore implements IApplicationStore {
     @action.bound
     public toggleExplainRemove = () => {
         this.explainRemove = !this.explainRemove;
+    }
+
+    /**
+     * Toggle whether tree traversals should be explained in detail.
+     */
+    @action.bound
+    public toggleExplainTraverse = () => {
+        this.explainTraverse = !this.explainTraverse;
     }
 
     /**

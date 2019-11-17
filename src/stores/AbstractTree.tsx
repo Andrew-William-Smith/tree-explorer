@@ -1,5 +1,6 @@
 import React from 'react';
 import { action, observable } from 'mobx';
+import HighlightNode, { HighlightColours } from '../components/HighlightNode/HighlightNode';
 
 type ExplainPromise = (title: string, message: React.ReactElement, terminal?: boolean) => Promise<any>;
 
@@ -75,7 +76,7 @@ export abstract class AbstractTree {
     /** The root of this tree. */
     root: BinaryTreeNode;
     /** The size of this tree, used to determine when to rerender. */
-    size: number;
+    @observable size: number;
     /** The number of operations performed on this tree, used to determine when
      * to rerender. */
     @observable numOperations: number;
@@ -133,4 +134,49 @@ export abstract class AbstractTree {
      * @param item The item to remove from this tree.
      */
     public abstract async removeItem(item: number): Promise<void>;
+
+    /**
+     * Perform a pre-order traversal of this tree.
+     */
+    public async *traversePreOrder(): any {
+        if (this.root.value !== null)
+            yield* this.navigatePreOrder(this.root);
+
+        await this.explainStep('Traversal complete', <div>
+            The in-order traversal of this tree is complete.
+            The full results may be seen in the list of tree contents in the sidebar.
+        </div>, true);
+    }
+
+    private async *navigatePreOrder(node: BinaryTreeNode): any {
+        // Add this node
+        yield node.value;
+        await this.explainStep('Add current node', <div>
+            Begin by adding the
+                <HighlightNode node={node} colour={HighlightColours.GREEN}>current node </HighlightNode>
+            to the list of results.
+        </div>);
+
+        // Add the left node
+        if (node.leftChild!.value !== null) {
+            await this.explainStep('Traverse left child', <div>
+                In order to proceed from the
+                    <HighlightNode node={node} colour={HighlightColours.GREEN}>current node </HighlightNode>
+                , we first travel down the subtree formed under the
+                    <HighlightNode node={node.leftChild!} colour={HighlightColours.BLUE}>left child</HighlightNode>.
+            </div>);
+            yield* this.navigatePreOrder(node.leftChild!);
+        }
+
+        // Add the right node
+        if (node.rightChild!.value !== null) {
+            await this.explainStep('Traverse right child', <div>
+                Finally, we shall proceed from the
+                    <HighlightNode node={node} colour={HighlightColours.GREEN}>current node </HighlightNode>
+                down the subtree formed by the
+                    <HighlightNode node={node.rightChild!} colour={HighlightColours.BLUE}>right child</HighlightNode>.
+            </div>);
+            yield* this.navigatePreOrder(node.rightChild!);
+        }
+    }
 }
