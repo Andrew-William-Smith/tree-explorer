@@ -4,6 +4,11 @@ import { IconNames, IconName } from '@blueprintjs/icons';
 import { AbstractTree } from './AbstractTree';
 import NaiveTree from './NaiveTree';
 
+/** Types of tree traversals that may be performed. */
+export enum Traversal {
+    PRE_ORDER, IN_ORDER, POST_ORDER
+}
+
 export interface IApplicationStore {
     /** Array of all items stored in the current application state. */
     items: Array<number>;
@@ -107,16 +112,29 @@ export default class ApplicationStore implements IApplicationStore {
     }
 
     /**
-     * Perform a pre-order traversal of the current tree.
+     * Perform a full traversal of the current tree.
      */
     @action.bound
-    public traversePreOrder = async () => {
+    public traverse = async (traversal: Traversal) => {
         this.treeOperating = true;
         this.explaining = this.explainTraverse;
+
+        // Create generator for requested traversal
+        let traversalGenerator = null;
+        switch (traversal) {
+            case Traversal.PRE_ORDER:
+                traversalGenerator = this.tree.traversePreOrder();
+                break;
+            case Traversal.IN_ORDER:
+                traversalGenerator = this.tree.traverseInOrder();
+                break;
+            case Traversal.POST_ORDER:
+                traversalGenerator = this.tree.traversePostOrder();
+        }
+
         // Clear items and relist from traversal generator
         this.items = [];
-        let preOrderGenerator = this.tree.traversePreOrder();
-        for await (const val of preOrderGenerator) {
+        for await (const val of traversalGenerator) {
             this.items.push(val);
         }
         this.treeOperating = false;

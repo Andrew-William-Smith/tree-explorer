@@ -143,40 +143,105 @@ export abstract class AbstractTree {
             yield* this.navigatePreOrder(this.root);
 
         await this.explainStep('Traversal complete', <div>
-            The in-order traversal of this tree is complete.
+            The pre-order traversal of this tree is complete.
             The full results may be seen in the list of tree contents in the sidebar.
         </div>, true);
     }
 
     private async *navigatePreOrder(node: BinaryTreeNode): any {
-        // Add this node
+        let continuePreOrder = (node: BinaryTreeNode) => this.navigatePreOrder(node);
+        yield* this.explainTraverseCurrent(node);
+        yield* this.explainTraverseLeft(node, 'Next', continuePreOrder);
+        yield* this.explainTraverseRight(node, 'Finally', continuePreOrder);
+    }
+
+    /**
+     * Perform an in-order traversal of this tree.
+     */
+    public async *traverseInOrder(): any {
+        if (this.root.value !== null)
+            yield* this.navigateInOrder(this.root);
+
+        await this.explainStep('Traversal complete', <div>
+            The in-order traversal of this tree is complete.
+            The full results may be seen in the list of tree contents in the sidebar.
+        </div>, true);
+    }
+
+    private async *navigateInOrder(node: BinaryTreeNode): any {
+        let continueInOrder = (node: BinaryTreeNode) => this.navigateInOrder(node);
+        yield* this.explainTraverseLeft(node, 'First', continueInOrder);
+        yield* this.explainTraverseCurrent(node);
+        yield* this.explainTraverseRight(node, 'Finally', continueInOrder);
+    }
+
+    /**
+     * Perform a post-order traversal of this tree.
+     */
+    public async *traversePostOrder(): any {
+        if (this.root.value !== null)
+            yield* this.navigatePostOrder(this.root);
+
+        await this.explainStep('Traversal complete', <div>
+            The post-order traversal of this tree is complete.
+            The full results may be seen in the list of tree contents in the sidebar.
+        </div>, true);
+    }
+
+    private async *navigatePostOrder(node: BinaryTreeNode): any {
+        let continuePostOrder = (node: BinaryTreeNode) => this.navigatePostOrder(node);
+        yield* this.explainTraverseLeft(node, 'First', continuePostOrder);
+        yield* this.explainTraverseRight(node, 'Next', continuePostOrder);
+        yield* this.explainTraverseCurrent(node);
+    }
+
+    /**
+     * Explain the traversal of the current node.
+     * @param node The node for which to give an explanation.
+     * @param prefix The prefix to add to the explanation message.
+     */
+    private async *explainTraverseCurrent(node: BinaryTreeNode) {
         yield node.value;
         await this.explainStep('Add current node', <div>
-            Begin by adding the
+            Add the
                 <HighlightNode node={node} colour={HighlightColours.GREEN}>current node </HighlightNode>
             to the list of results.
         </div>);
+    }
 
-        // Add the left node
+    /**
+     * Explain the traversal of the node to the left of the specified node.
+     * @param node The node from which to traverse.
+     * @param prefix The prefix to add to the explanation message.
+     * @param callback The function to use to continue traversing the tree.
+     */
+    private async *explainTraverseLeft(node: BinaryTreeNode, prefix: string, callback: (node: BinaryTreeNode) => any) {
         if (node.leftChild!.value !== null) {
             await this.explainStep('Traverse left child', <div>
-                In order to proceed from the
+                {prefix}, proceed from the
                     <HighlightNode node={node} colour={HighlightColours.GREEN}>current node </HighlightNode>
-                , we first travel down the subtree formed under the
+                down the subtree formed under its
                     <HighlightNode node={node.leftChild!} colour={HighlightColours.BLUE}>left child</HighlightNode>.
             </div>);
-            yield* this.navigatePreOrder(node.leftChild!);
+            yield* callback(node.leftChild!);
         }
+    }
 
-        // Add the right node
+    /**
+     * Explain the traversal of the node to the right of the specified node.
+     * @param node The node from which to traverse.
+     * @param prefix The prefix to add to the explanation message.
+     * @param callback The function to use to continue traversing the tree.
+     */
+    private async *explainTraverseRight(node: BinaryTreeNode, prefix: string, callback: (node: BinaryTreeNode) => any) {
         if (node.rightChild!.value !== null) {
             await this.explainStep('Traverse right child', <div>
-                Finally, we shall proceed from the
+                {prefix}, proceed from the
                     <HighlightNode node={node} colour={HighlightColours.GREEN}>current node </HighlightNode>
-                down the subtree formed by the
+                down the subtree formed under its
                     <HighlightNode node={node.rightChild!} colour={HighlightColours.BLUE}>right child</HighlightNode>.
             </div>);
-            yield* this.navigatePreOrder(node.rightChild!);
+            yield* callback(node.rightChild!);
         }
     }
 }

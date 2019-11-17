@@ -2,7 +2,7 @@ import React from 'react';
 import { observer, inject } from 'mobx-react';
 import { Button, ButtonGroup, Card, Divider, NumericInput, Switch } from '@blueprintjs/core';
 
-import ApplicationStore from '../../stores/ApplicationStore';
+import ApplicationStore, { Traversal } from '../../stores/ApplicationStore';
 import TreeItem from './TreeItem/TreeItem';
 import './Sidebar.css';
 
@@ -34,7 +34,7 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
         let treeItems = <div className="sidebarTreeItems">{treeItemList}</div>;
 
         // If there are no items in the tree, show a placeholder instead
-        if (treeItemList.length === 0) {
+        if (treeItemList.length === 0 && !treeOperating) {
             treeItems = <Card>No items in tree &mdash; add one above!</Card>;
         }
 
@@ -58,9 +58,12 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
 
                 <h2>Tree contents</h2>
                 <ButtonGroup className="sidebarTraversals">
-                    <Button onClick={store.traversePreOrder} disabled={treeOperating}>Pre-Order</Button>
-                    <Button disabled={treeOperating}>In-Order</Button>
-                    <Button disabled={treeOperating}>Post-Order</Button>
+                    <Button onClick={() => store.traverse(Traversal.PRE_ORDER)}
+                        disabled={treeOperating}>Pre-Order</Button>
+                    <Button onClick={() => store.traverse(Traversal.IN_ORDER)}
+                        disabled={treeOperating}>In-Order</Button>
+                    <Button onClick={() => store.traverse(Traversal.POST_ORDER)}
+                        disabled={treeOperating}>Post-Order</Button>
                 </ButtonGroup>
                 {treeItems}
             </div>
