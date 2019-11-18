@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
-import { Button, ButtonGroup, Card, Divider, Intent, NumericInput, Switch } from '@blueprintjs/core';
+import { Button, ButtonGroup, Card, Divider, Intent, NumericInput, Slider, Switch } from '@blueprintjs/core';
 
 import ApplicationStore, { Traversal } from '../../stores/ApplicationStore';
 import TreeItem from './TreeItem/TreeItem';
@@ -23,6 +23,10 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
             }
         }
     };
+
+    private setAnimationInterval = (interval: number) => {
+        this.props.applicationStore!.animationInterval = interval;
+    }
 
     render(): React.ReactNode {
         let store = this.props.applicationStore!;
@@ -52,6 +56,12 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
                     <Switch className="explainCheckbox" checked={store.explainTraverse}
                         label="Explain traversals" onChange={store.toggleExplainTraverse}
                         disabled={treeOperating} />
+
+                    <div className="animationSliderContainer">
+                        Animation speed (ms):
+                        <Slider min={0} max={1000} stepSize={10} labelStepSize={250}
+                            value={store.animationInterval} onChange={this.setAnimationInterval} />
+                    </div>
                 </div>
 
                 <Divider />

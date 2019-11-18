@@ -34,6 +34,8 @@ export interface IApplicationStore {
     explanationBody: React.ReactElement | null;
     /** Whether the current step is the final step of the explanation. */
     explanationTerminal: boolean;
+    /** The time in milliseconds for which to pause between animation frames. */
+    animationInterval: number;
 }
 
 export default class ApplicationStore implements IApplicationStore {
@@ -49,6 +51,7 @@ export default class ApplicationStore implements IApplicationStore {
     @observable explanationTitle: string;
     @observable explanationBody: React.ReactElement | null;
     @observable explanationTerminal: boolean;
+    @observable animationInterval: number;
 
     /** Used to display toast notifications within this application. */
     private toaster: IToaster;
@@ -67,6 +70,7 @@ export default class ApplicationStore implements IApplicationStore {
         this.explanationTitle = '';
         this.explanationBody = null;
         this.explanationTerminal = false;
+        this.animationInterval = 150;
 
         // Show toast notifications in the top right corner
         this.toaster = Toaster.create({
@@ -208,7 +212,7 @@ export default class ApplicationStore implements IApplicationStore {
         } else {
             // Otherwise, create a timeout-based promise
             return new Promise((resolve, reject) => {
-                setTimeout(resolve, 150);
+                setTimeout(resolve, this.animationInterval);
             });
         }
     }

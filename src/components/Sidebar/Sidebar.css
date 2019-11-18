@@ -30,3 +30,12 @@
 .sidebar .explainCheckbox:not(:last-child) {
     margin-bottom: 0;
 }
+
+.animationSliderContainer {
+    margin-top: 14px;
+}
+
+.animationSliderContainer .bp3-slider {
+    width: 95%;
+    margin-top: 6px;
+}
