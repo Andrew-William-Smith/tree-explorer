@@ -54,6 +54,43 @@ export class BinaryTreeNode {
         };
     }
 
+    /**
+     * The grandparent (parent of parent) of this node.
+     */
+    public get grandparent(): BinaryTreeNode | null {
+        // If there is no parent, there cannot be a grandparent
+        if (this.parent === null)
+            return null;
+
+        return this.parent.parent;
+    }
+
+    /**
+     * The sibling of this node: the other node with the same parent as this
+     * node, provided this node has a parent.
+     */
+    public get sibling(): BinaryTreeNode | null {
+        // If there is no parent, there cannot be a sibling
+        if (this.parent === null)
+            return null;
+
+        if (this.parent.leftChild === this)
+            return this.parent.rightChild;
+        return this.parent.leftChild;
+    }
+
+    /**
+     * The ommer (aunt/uncle) of this node: the other node with the same
+     * grandparent as this node's parent.
+     */
+    public get ommer(): BinaryTreeNode | null {
+        // If there is no grandparent, there cannot be an ommer
+        if (this.grandparent === null)
+            return null;
+
+        return this.parent!.sibling;
+    }
+
     /** Determine whether this tree node represents a leaf. */
     public isLeaf(): boolean {
         return this.leftChild !== null && this.leftChild.value === null
@@ -171,22 +208,21 @@ export abstract class AbstractTree {
     public abstract async removeItem(item: number): Promise<void>;
 
     /**
-     * Add an item to this tree using the "naïve" algorithm.
-     * @param item The item to add to the tree.
-     * @param colour The colour of the node to be added.
+     * Add a node to this tree using the "naïve" algorithm.
+     * @param newNode The node to be added to the tree.
      * @param final Whether to designate the addition of the node as the final
      *     operation of an explanation.
      */
     @action.bound
-    protected async addItemNaive(item: number, colour: string, final: boolean): Promise<void> {
-        this.root = await this.addRecursive(item, colour, final, this.root);
+    protected async addNodeNaive(newNode: BinaryTreeNode, final: boolean): Promise<void> {
+        this.root = await this.addRecursive(newNode, final, this.root);
         this.root.parent = null;
         this.size++;
         this.numOperations++;
     }
 
     @action.bound
-    private async addRecursive(item: number, colour: string, final: boolean, node: BinaryTreeNode): Promise<BinaryTreeNode> {
+    private async addRecursive(newNode: BinaryTreeNode, final: boolean, node: BinaryTreeNode): Promise<BinaryTreeNode> {
         // We have reached a dead end, add here
         if (node.value === null) {
             await this.explainStep('Insert node', <div>
@@ -194,18 +230,19 @@ export abstract class AbstractTree {
                     <HighlightNode node={node} colour={HighlightColours.GREEN}>position </HighlightNode>
                 at which we can insert our node. We shall do so, finishing our insertion operation.
             </div>, final);
-            return new BinaryTreeNode(item, colour);
+            return newNode;
         }
 
         // Otherwise, determine which direction to travel: left if less than, right if greater
-        await this.explainNavigation(item, node);
-        if (item < node.value) {
-            let leftChild = await this.addRecursive(item, colour, final, node.leftChild!);
+        let newValue = newNode.value!;
+        await this.explainNavigation(newValue, node);
+        if (newValue < node.value) {
+            let leftChild = await this.addRecursive(newNode, final, node.leftChild!);
             leftChild.parent = node;
             node.leftChild = leftChild;
         }
-        else if (item > node.value) {
-            let rightChild = await this.addRecursive(item, colour, final, node.rightChild!);
+        else if (newValue > node.value) {
+            let rightChild = await this.addRecursive(newNode, final, node.rightChild!);
             rightChild.parent = node;
             node.rightChild = rightChild;
         }

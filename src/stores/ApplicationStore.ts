@@ -3,6 +3,7 @@ import { Intent, IToaster, Position, Toaster } from '@blueprintjs/core';
 import { IconNames, IconName } from '@blueprintjs/icons';
 import { AbstractTree } from './AbstractTree';
 import NaiveTree from './NaiveTree';
+import RedBlackTree from './RedBlackTree';
 
 /** Types of tree traversals that may be performed. */
 export enum Traversal {
@@ -54,7 +55,7 @@ export default class ApplicationStore implements IApplicationStore {
 
     constructor() {
         this.items = [];
-        this.tree = new NaiveTree(this.explainStep);
+        this.tree = new RedBlackTree(this.explainStep);
         this.treeOperating = false;
 
         // Initialise explanation parameters

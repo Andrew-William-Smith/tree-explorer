@@ -62,7 +62,7 @@ export default class TreeNode extends React.Component<ITreeNodeProps, ITreeNodeS
         } else {
             return {
                 color: highlighted ? 'white' : nodeColour,
-                borderColor: highlighted ? highlightColour : nodeColour,
+                borderColor: nodeColour,
                 backgroundColor: highlighted ? highlightColour : 'white'
             }
         }

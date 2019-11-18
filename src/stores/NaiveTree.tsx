@@ -7,7 +7,7 @@ import HighlightNode, { HighlightColours } from '../components/HighlightNode/Hig
 export default class NaiveTree extends AbstractTree {
     @action.bound
     public async addItem(item: number): Promise<void> {
-        await this.addItemNaive(item, 'black', true);
+        await this.addNodeNaive(new BinaryTreeNode(item), true);
     }
 
     @action.bound
