@@ -112,6 +112,15 @@ export default class ApplicationStore implements IApplicationStore {
     }
 
     /**
+     * Remove all items from the current tree.
+     */
+    @action.bound
+    public clearTree = () => {
+        this.items = [];
+        this.tree = new NaiveTree(this.explainStep);
+    }
+
+    /**
      * Perform a full traversal of the current tree.
      */
     @action.bound

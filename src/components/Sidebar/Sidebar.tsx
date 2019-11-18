@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
-import { Button, ButtonGroup, Card, Divider, NumericInput, Switch } from '@blueprintjs/core';
+import { Button, ButtonGroup, Card, Divider, Intent, NumericInput, Switch } from '@blueprintjs/core';
 
 import ApplicationStore, { Traversal } from '../../stores/ApplicationStore';
 import TreeItem from './TreeItem/TreeItem';
@@ -64,6 +64,8 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
                         disabled={treeOperating}>In-Order</Button>
                     <Button onClick={() => store.traverse(Traversal.POST_ORDER)}
                         disabled={treeOperating}>Post-Order</Button>
+                    <Button onClick={store.clearTree} intent={Intent.DANGER}
+                        disabled={treeOperating || store.tree.size === 0}>Clear</Button>
                 </ButtonGroup>
                 {treeItems}
             </div>
