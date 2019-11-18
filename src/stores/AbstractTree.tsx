@@ -32,7 +32,7 @@ export class BinaryTreeNode {
     /** Rendering properties for this node. */
     @observable renderProps: IBinaryTreeNodeRender;
 
-    constructor(value: number | null, colour: string = "#000") {
+    constructor(value: number | null, colour: string = 'black') {
         this.value = value;
         this.colour = colour;
         this.parent = null;

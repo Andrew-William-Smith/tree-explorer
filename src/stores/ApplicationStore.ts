@@ -1,6 +1,7 @@
 import { action, observable } from 'mobx';
 import { Intent, IToaster, Position, Toaster } from '@blueprintjs/core';
 import { IconNames, IconName } from '@blueprintjs/icons';
+
 import { AbstractTree } from './AbstractTree';
 import NaiveTree from './NaiveTree';
 import RedBlackTree from './RedBlackTree';
@@ -86,17 +87,16 @@ export default class ApplicationStore implements IApplicationStore {
      * @param item The item to which to add to the trees.
      */
     @action.bound
-    public addItem = (item: number) => {
+    public addItem = async (item: number) => {
         if (this.items.includes(item)) {
             this.showToast(`Cannot add duplicate item "${item}" to tree.`,
                 Intent.WARNING, IconNames.WARNING_SIGN);
         } else {
             this.treeOperating = true;
             this.explaining = this.explainAdd;
-            this.tree.addItem(item).then(() => {
-                this.items.push(item)
-                this.treeOperating = false;
-            });
+            await this.tree.addItem(item);
+            this.items.push(item)
+            this.treeOperating = false;
         }
     };
 

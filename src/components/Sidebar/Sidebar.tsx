@@ -1,6 +1,8 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
-import { Button, ButtonGroup, Card, Divider, Intent, NumericInput, Slider, Switch } from '@blueprintjs/core';
+
+import { Button, ButtonGroup, Card, ControlGroup, Divider, Intent, NumericInput, Position, Slider, Switch, Tooltip } from '@blueprintjs/core';
+import { IconNames } from '@blueprintjs/icons';
 
 import ApplicationStore, { Traversal } from '../../stores/ApplicationStore';
 import TreeItem from './TreeItem/TreeItem';
@@ -13,16 +15,77 @@ interface ISidebarProps {
 @inject('applicationStore')
 @observer
 export default class Sidebar extends React.Component<ISidebarProps, {}> {
-    private addTreeItem = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+    private addItemRef: HTMLInputElement | null;
+    private addManyRef: HTMLInputElement | null;
+
+    constructor(props: ISidebarProps) {
+        super(props);
+        this.addItemRef = null;
+        this.addManyRef = null;
+    }
+
+    private addTreeItemKbd = (evt: React.KeyboardEvent<HTMLInputElement>) => {
         // If the user pressed Enter, add their item to the tree
         if (evt.key === 'Enter') {
-            let newItem = evt.currentTarget.value;
-            if (newItem !== '') {
-                this.props.applicationStore!.addItem(+newItem);
-                evt.currentTarget.value = '';
+            this.addTreeItem();
+        }
+    }
+
+    private addTreeItem = () => {
+        if (this.addItemRef !== null) {
+            let item = this.addItemRef.value;
+            if (item !== '') {
+                this.props.applicationStore!.addItem(+item);
+                this.addItemRef.value = '';
             }
         }
     };
+
+    private addManyAscending = async () => {
+        if (this.addManyRef !== null) {
+            let item = this.addManyRef.value;
+            if (item !== '') {
+                for (let i = 1; i <= +item; i++)
+                    await this.props.applicationStore!.addItem(i);
+
+                this.addManyRef.value = '';
+            }
+        }
+    }
+
+    private addManyDescending = async () => {
+        if (this.addManyRef !== null) {
+            let item = this.addManyRef.value;
+            if (item !== '') {
+                for (let i = +item; i >= 1; i--)
+                    await this.props.applicationStore!.addItem(i);
+
+                this.addManyRef.value = '';
+            }
+        }
+    }
+
+    private addManyRandom = async () => {
+        if (this.addManyRef !== null) {
+            let item = this.addManyRef.value;
+            if (item !== '') {
+                // Generate a list of numbers in random order
+                let itemNum = +item;
+                let items = [];
+                for (let i = 1; i <= itemNum; i++)
+                    items.push(i);
+                // Fisher-Yates shuffle
+                for (let i = itemNum - 1; i > 0; i--) {
+                    const newIdx = Math.floor(Math.random() * (i + 1));
+                    [items[i], items[newIdx]] = [items[newIdx], items[i]];
+                }
+                // Add values to tree
+                for (let i = 0; i < itemNum; i++)
+                    await this.props.applicationStore!.addItem(items[i]);
+                this.addManyRef.value = '';
+            }
+        }
+    }
 
     private setAnimationInterval = (interval: number) => {
         this.props.applicationStore!.animationInterval = interval;
@@ -44,8 +107,31 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
 
         return (
             <div className="sidebar">
-                <NumericInput leftIcon="new-object" placeholder="Add an item" onKeyUp={this.addTreeItem}
-                    disabled={treeOperating} />
+                <ControlGroup fill>
+                    <NumericInput inputRef={ref => this.addItemRef = ref} leftIcon={IconNames.NEW_OBJECT}
+                        placeholder="Add an item" onKeyUp={this.addTreeItemKbd}
+                        disabled={treeOperating} fill />
+                    <Button intent={Intent.SUCCESS} onClick={this.addTreeItem}
+                        disabled={treeOperating}>Add</Button>
+                </ControlGroup>
+
+                <ControlGroup className="addManyInput" fill>
+                    <NumericInput inputRef={ref => this.addManyRef = ref} leftIcon={IconNames.ADD_TO_ARTIFACT}
+                        placeholder="Add many items" disabled={treeOperating} fill />
+                    <Tooltip content="Add values ascending" position={Position.BOTTOM}>
+                        <Button intent={Intent.SUCCESS} icon={IconNames.SORT_NUMERICAL}
+                            onClick={this.addManyAscending} disabled={treeOperating} />
+                    </Tooltip>
+                    <Tooltip content="Add values descending" position={Position.BOTTOM}>
+                        <Button intent={Intent.SUCCESS} icon={IconNames.SORT_NUMERICAL_DESC}
+                            onClick={this.addManyDescending} disabled={treeOperating} />
+                    </Tooltip>
+                    <Tooltip content="Add values randomly" position={Position.BOTTOM}>
+                        <Button intent={Intent.SUCCESS} icon={IconNames.SOCIAL_MEDIA}
+                            onClick={this.addManyRandom} disabled={treeOperating} />
+                    </Tooltip>
+                </ControlGroup>
+
                 <div>
                     <Switch className="explainCheckbox" checked={store.explainAdd}
                         label="Explain additions" onChange={store.toggleExplainAdd}
