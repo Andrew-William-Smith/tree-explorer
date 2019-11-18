@@ -23,6 +23,8 @@ export class BinaryTreeNode {
     value: number | null;
     /** The colour of this node. */
     @observable colour: string;
+    /** The parent of this node. */
+    parent: BinaryTreeNode | null;
     /** The subordinate node stored to the left of this node. */
     leftChild: BinaryTreeNode | null;
     /** The subordinate node stored to the right of this node. */
@@ -33,6 +35,7 @@ export class BinaryTreeNode {
     constructor(value: number | null, colour: string = "#000") {
         this.value = value;
         this.colour = colour;
+        this.parent = null;
 
         // If the value is non-null, create children
         if (this.value !== null) {
@@ -92,12 +95,22 @@ export abstract class AbstractTree {
      * @param items List of items to be added to this binary search tree.
      */
     constructor(explain: ExplainPromise, items: Array<number> = []) {
+        // Cannot call reset() or the TypeScript compiler throws a fit
         this.root = new BinaryTreeNode(null);
         this.size = 0;
         this.numOperations = 0;
         this.explainFunction = explain;
         this.highlightedNodes = [];
         items.forEach(item => this.addItem(item));
+    }
+
+    /**
+     * Reset this tree to its initial state, containing only a null root.
+     */
+    public reset(): void {
+        this.root = new BinaryTreeNode(null);
+        this.size = 0;
+        this.numOperations = 0;
     }
 
     /**
@@ -120,6 +133,28 @@ export abstract class AbstractTree {
     }
 
     /**
+     * Explain the process of navigating through the tree from the specified
+     * node in search of the specified item.
+     *
+     * @param item The item for which the tree operation is being performed.
+     * @param node The tree node from which to navigate.
+     */
+    protected async explainNavigation(item: number, node: BinaryTreeNode): Promise<void> {
+        let directionName = item < node.value! ? 'left' : 'right';
+
+        await this.explainStep(`Navigate ${directionName} from ${node.value}`, <div>
+            We need to determine in which direction to navigate down the tree.
+            As the value under consideration, <strong>{item}</strong>, is less than the value of the
+                <HighlightNode node={node} colour={HighlightColours.GREEN}>current node</HighlightNode>
+            , <strong>{node.value}</strong>, we shall navigate to the
+                <HighlightNode node={item < node.value! ? node.leftChild! : node.rightChild!} colour={HighlightColours.BLUE}>
+                    <strong>{directionName}</strong>
+                </HighlightNode>.
+        </div>);
+        return;
+    }
+
+    /**
      * Add the specified item to this tree.  It is expected that the tree does
      * not already contain this item.
      *
@@ -134,6 +169,48 @@ export abstract class AbstractTree {
      * @param item The item to remove from this tree.
      */
     public abstract async removeItem(item: number): Promise<void>;
+
+    /**
+     * Add an item to this tree using the "naïve" algorithm.
+     * @param item The item to add to the tree.
+     * @param colour The colour of the node to be added.
+     * @param final Whether to designate the addition of the node as the final
+     *     operation of an explanation.
+     */
+    @action.bound
+    protected async addItemNaive(item: number, colour: string, final: boolean): Promise<void> {
+        this.root = await this.addRecursive(item, colour, final, this.root);
+        this.root.parent = null;
+        this.size++;
+        this.numOperations++;
+    }
+
+    @action.bound
+    private async addRecursive(item: number, colour: string, final: boolean, node: BinaryTreeNode): Promise<BinaryTreeNode> {
+        // We have reached a dead end, add here
+        if (node.value === null) {
+            await this.explainStep('Insert node', <div>
+                We have found a
+                    <HighlightNode node={node} colour={HighlightColours.GREEN}>position </HighlightNode>
+                at which we can insert our node. We shall do so, finishing our insertion operation.
+            </div>, final);
+            return new BinaryTreeNode(item, colour);
+        }
+
+        // Otherwise, determine which direction to travel: left if less than, right if greater
+        await this.explainNavigation(item, node);
+        if (item < node.value) {
+            let leftChild = await this.addRecursive(item, colour, final, node.leftChild!);
+            leftChild.parent = node;
+            node.leftChild = leftChild;
+        }
+        else if (item > node.value) {
+            let rightChild = await this.addRecursive(item, colour, final, node.rightChild!);
+            rightChild.parent = node;
+            node.rightChild = rightChild;
+        }
+        return node;
+    }
 
     /**
      * Perform a pre-order traversal of this tree.

@@ -117,7 +117,7 @@ export default class ApplicationStore implements IApplicationStore {
     @action.bound
     public clearTree = () => {
         this.items = [];
-        this.tree = new NaiveTree(this.explainStep);
+        this.tree.reset();
     }
 
     /**

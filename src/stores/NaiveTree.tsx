@@ -7,35 +7,13 @@ import HighlightNode, { HighlightColours } from '../components/HighlightNode/Hig
 export default class NaiveTree extends AbstractTree {
     @action.bound
     public async addItem(item: number): Promise<void> {
-        this.root = await this.addRecursive(item, this.root);
-        this.size++;
-        this.numOperations++;
-    }
-
-    @action.bound
-    private async addRecursive(item: number, node: BinaryTreeNode): Promise<BinaryTreeNode> {
-        // We have reached a dead end, add here
-        if (node.value === null) {
-            await this.explainStep('Insert node', <div>
-                We have found a
-                    <HighlightNode node={node} colour={HighlightColours.GREEN}>position </HighlightNode>
-                at which we can insert our node. We shall do so, finishing our insertion operation.
-            </div>, true);
-            return new BinaryTreeNode(item);
-        }
-
-        // Otherwise, determine which direction to travel: left if less than, right if greater
-        await this.explainNavigation(item, node);
-        if (item < node.value)
-            node.leftChild = await this.addRecursive(item, node.leftChild!);
-        else if (item > node.value)
-            node.rightChild = await this.addRecursive(item, node.rightChild!);
-        return node;
+        await this.addItemNaive(item, 'black', true);
     }
 
     @action.bound
     public async removeItem(item: number): Promise<void> {
         this.root = await this.removeRecursive(item, this.root);
+        this.root.parent = null;
         this.size--;
         this.numOperations++;
     }
@@ -47,10 +25,14 @@ export default class NaiveTree extends AbstractTree {
             // Determine which direction to travel down the tree
             if (item < node.value) {
                 await this.explainNavigation(item, node);
-                node.leftChild = await this.removeRecursive(item, node.leftChild!);
+                let leftChild = await this.removeRecursive(item, node.leftChild!);
+                leftChild.parent = node;
+                node.leftChild = leftChild;
             } else if (item > node.value) {
                 await this.explainNavigation(item, node);
-                node.rightChild = await this.removeRecursive(item, node.rightChild!);
+                let rightChild = await this.removeRecursive(item, node.rightChild!);
+                rightChild.parent = node;
+                node.rightChild = rightChild;
             } else {
                 // Remove the desired node from the subtree
                 if (node.isLeaf()) {
@@ -65,7 +47,9 @@ export default class NaiveTree extends AbstractTree {
                     </div>, true);
 
                     // Node is a leaf: revert to null node
-                    node = new BinaryTreeNode(null);
+                    let newNode = new BinaryTreeNode(null);
+                    newNode.parent = node;
+                    node = newNode;
                 } else if (node.leftChild!.value === null) {
                     await this.explainStep('Promote right child', <div>
                         We have found the <HighlightNode node={node} colour={HighlightColours.RED}>node with value {item} </HighlightNode>
@@ -78,6 +62,7 @@ export default class NaiveTree extends AbstractTree {
                     </div>, true);
 
                     // Left child is null, promote the right child
+                    node.rightChild!.parent = node.parent;
                     node = node.rightChild!;
                 } else if (node.rightChild!.value === null) {
                     await this.explainStep('Promote left child', <div>
@@ -91,6 +76,7 @@ export default class NaiveTree extends AbstractTree {
                     </div>, true);
 
                     // Right child is null, promote the left child
+                    node.leftChild!.parent = node.parent;
                     node = node.leftChild!;
                 } else {
                     await this.explainStep('Find minimum greater value', <div>
@@ -120,7 +106,9 @@ export default class NaiveTree extends AbstractTree {
                             <HighlightNode node={minChild} colour={HighlightColours.RED}>old position</HighlightNode>.
                         We shall use the same algorithm we used to remove the initial node.
                     </div>);
-                    node.rightChild = await this.removeRecursive(node.value!, node.rightChild!);
+                    let newRightChild = await this.removeRecursive(node.value!, node.rightChild!);
+                    newRightChild.parent = node;
+                    node.rightChild = newRightChild;
                 }
             }
         } else {
@@ -132,28 +120,5 @@ export default class NaiveTree extends AbstractTree {
         }
 
         return node;
-    }
-
-    /**
-     * Explain the process of navigating through the tree from the specified
-     * node in search of the specified item.
-     *
-     * @param item The item for which the tree operation is being performed.
-     * @param node The tree node from which to navigate.
-     */
-    private async explainNavigation(item: number, node: BinaryTreeNode): Promise<void> {
-        let directionName = item < node.value! ? 'left' : 'right';
-
-        await this.explainStep(`Navigate ${directionName} from ${node.value}`, <div>
-            We need to determine in which direction to navigate down the tree.
-            As the value under consideration, <strong>{item}</strong>, is less than the value of the
-                <HighlightNode node={node} colour={HighlightColours.GREEN}>current node</HighlightNode>
-            , <strong>{node.value}</strong>, we shall navigate to the
-                <HighlightNode node={item < node.value! ? node.leftChild! : node.rightChild!} colour={HighlightColours.BLUE}>
-                    <strong>{directionName}</strong>
-                </HighlightNode>.
-        </div>);
-
-        return;
     }
 }
