@@ -99,11 +99,9 @@ export default class RedBlackTree extends AbstractTree {
                 <HighlightNode node={parent} colour={HighlightColours.BLUE}>parent </HighlightNode>
             of the
                 <HighlightNode node={node} colour={HighlightColours.GREEN}>node to rebalance </HighlightNode>
-            is <NodeColour colour={this.RED} /> but its
-                <HighlightNode node={node.ommer!} colour={HighlightColours.ORANGE}>uncle </HighlightNode>
-            is <NodeColour colour={this.BLACK} />, this tree currently violates the red rule.
+            is <NodeColour colour={this.RED} />, this tree currently violates the red rule.
             To rectify this situation, we want to rotate the current node into the position of its
-                <HighlightNode node={grandparent} colour={HighlightColours.RED}>grandparent</HighlightNode>
+                <HighlightNode node={grandparent} colour={HighlightColours.ORANGE}>grandparent</HighlightNode>
             .
         </div>);
 
@@ -116,7 +114,7 @@ export default class RedBlackTree extends AbstractTree {
             await this.explainStep('Rotate outside grandparent', <div>
                 The <HighlightNode node={node} colour={HighlightColours.GREEN}>node to rebalance </HighlightNode>
                 is "inside" its
-                    <HighlightNode node={grandparent} colour={HighlightColours.RED}>grandparent</HighlightNode>
+                    <HighlightNode node={grandparent} colour={HighlightColours.ORANGE}>grandparent</HighlightNode>
                 : that is, it is not reachable by travelling solely {rotateDirection} from the grandparent.
                 To prepare to rotate relative to the grandparent, we must first rotate <strong>{rotateDirection}</strong> relative to the
                     <HighlightNode node={parent} colour={HighlightColours.BLUE}>parent</HighlightNode>.
@@ -124,21 +122,28 @@ export default class RedBlackTree extends AbstractTree {
         }
 
         // If necessary, rotate outward
-        if (doRotateLeft)
+        if (doRotateLeft) {
             await this.rotateLeft(parent);
-        else if (doRotateRight)
+            node = node.leftChild!;
+        } else if (doRotateRight) {
             await this.rotateRight(parent);
+            node = node.rightChild!;
+        }
+
+        // Reassign parent and grandparent, as rotation could have changed them
+        parent = node.parent!;
+        grandparent = node.grandparent!;
 
         // Rotate about the grandparent
         await this.explainStep('Rotate about grandparent', <div>
-            We are now certain that the
-                <HighlightNode node={node} colour={HighlightColours.GREEN}>node to rebalance </HighlightNode>
-            is "outside" its
-                <HighlightNode node={grandparent} colour={HighlightColours.RED}>grandparent</HighlightNode>
-            : the path between these nodes through the rebalanced node's
+            We shall now shift our focus to the 
+                <HighlightNode node={node} colour={HighlightColours.GREEN}>modified node </HighlightNode>
+            that is furthest down the tree.  We know that this node is "outside" its
+                <HighlightNode node={grandparent} colour={HighlightColours.ORANGE}>grandparent</HighlightNode>
+            : the path between these nodes through the modified node's
                 <HighlightNode node={parent} colour={HighlightColours.BLUE}>parent </HighlightNode>
             travels exclusively {node === parent.leftChild ? 'left': 'right'}.
-            If we now rotate <strong>{node === parent.leftChild ? 'right' : 'left'}</strong> about the grandparent,
+            If we now rotate <strong>{node === parent.leftChild ? 'right' : 'left'}</strong> about its grandparent,
             which we know to be <NodeColour colour={this.BLACK} /> by way of the red rule,
             then all that will be required to restore compliance with the red rule is a colour change.
         </div>);
@@ -151,9 +156,9 @@ export default class RedBlackTree extends AbstractTree {
         // Recolour old parent and grandparent
         await this.explainStep('Recolour relocated nodes', <div>
             The final step in the rebalancing process is to recolour the
-            <HighlightNode node={node} colour={HighlightColours.GREEN}>node to rebalance</HighlightNode>'s old
+            <HighlightNode node={node} colour={HighlightColours.GREEN}>modified node</HighlightNode>'s old
             <HighlightNode node={parent} colour={HighlightColours.BLUE}>parent</HighlightNode> and
-            <HighlightNode node={grandparent} colour={HighlightColours.RED}>grandparent </HighlightNode>
+            <HighlightNode node={grandparent} colour={HighlightColours.ORANGE}>grandparent </HighlightNode>
             (now sibling) to restore compliance with the red rule.
             We shall colour the parent <NodeColour colour={this.BLACK} /> and the sibling <NodeColour colour={this.RED} />.
         </div>, true);
