@@ -101,13 +101,12 @@ export default class RedBlackTree extends AbstractTree {
                 <HighlightNode node={node} colour={HighlightColours.GREEN}>node to rebalance </HighlightNode>
             is <NodeColour colour={this.RED} />, this tree currently violates the red rule.
             To rectify this situation, we want to rotate the current node into the position of its
-                <HighlightNode node={grandparent} colour={HighlightColours.ORANGE}>grandparent</HighlightNode>
-            .
+                <HighlightNode node={grandparent} colour={HighlightColours.ORANGE}>grandparent</HighlightNode>.
         </div>);
 
         // Determine which direction to rotate, if any
-        let doRotateLeft = (node === parent.rightChild && parent === grandparent.leftChild);
-        let doRotateRight = (node === parent.leftChild && parent === grandparent.rightChild);
+        let doRotateLeft = (node.isRightChild() && parent.isLeftChild());
+        let doRotateRight = (node.isLeftChild() && parent.isRightChild());
         if (doRotateLeft || doRotateRight) {
             // The current node is "inside" its grandparent, so we have to rotate
             let rotateDirection = doRotateLeft ? 'left' : 'right';
@@ -148,7 +147,7 @@ export default class RedBlackTree extends AbstractTree {
             then all that will be required to restore compliance with the red rule is a colour change.
         </div>);
 
-        if (node === parent.leftChild)
+        if (node.isLeftChild())
             await this.rotateRight(grandparent);
         else
             await this.rotateLeft(grandparent);
@@ -288,6 +287,142 @@ export default class RedBlackTree extends AbstractTree {
 
     @action.bound
     public async removeItem(item: number): Promise<void> {
-        return;
+        // Replace the node containing the item to remove
+        let replacement = await this.replaceItem(item, this.root);
+
+        this.size--;
+        this.numOperations++;
+    }
+
+    /**
+     * Replace the item in this tree containing the specified value with its
+     * right value if one exists, otherwise its left value.
+     *
+     * @param item The item to be replaced.
+     * @param node The current candidate node for replacement.
+     * @returns The node with which the target node was replaced.
+     */
+    @action.bound
+    private async replaceItem(item: number, node: BinaryTreeNode): Promise<BinaryTreeNode> {
+        if (node.value === item) {
+            // We have found the node to delete, so let's splice it out of the tree
+            return await this.spliceNode(node);
+        } else {
+            // Continue navigating down the tree
+            await this.explainNavigation(item, node);
+            return await this.replaceItem(item, item < node.value! ? node.leftChild! : node.rightChild!);
+        }
+    }
+
+    /**
+     * Splice the specified node out of the tree according to red-black tree
+     * deletion rules:
+     * - If the node is a leaf, set it to null.
+     * - If the node has only one non-null child, set it to that child.
+     * - If the node has two non-null children, replace the node with the
+     *   minimum node in its right subtree.
+     * 
+     * @param node The node to be spliced out of the tree.
+     */
+    @action.bound
+    private async spliceNode(node: BinaryTreeNode): Promise<BinaryTreeNode> {
+        // The node with which to replace the specified node
+        let replacement: BinaryTreeNode;
+
+        if (node.isLeaf()) {
+            await this.explainStep('Replace leaf with null', <div>
+                We have found the
+                    <HighlightNode node={node} colour={HighlightColours.RED}>node with value {node.value}</HighlightNode>
+                , so we can now remove it.
+                Since this node is a leaf, we shall replace it with null as it has no children to promote.
+            </div>);
+
+            // If the node is a leaf, replace it with null
+            node.makeNull();
+            replacement = node;
+        } else if (node.rightChild!.value === null) {
+            await this.explainStep('Promote left child', <div>
+                We have found the <HighlightNode node={node} colour={HighlightColours.RED}>node node with value {node.value}</HighlightNode>
+                , so we can now remove it.
+                Since this node has a <HighlightNode node={node.rightChild!} colour={HighlightColours.BLUE}>a null right child </HighlightNode>
+                and a <HighlightNode node={node.leftChild!} colour={HighlightColours.GREEN}>a non-null left child</HighlightNode>,
+                so we shall replace the node with its <strong>left</strong> child.
+            </div>);
+
+            // If there is no right child, replace with the left
+            replacement = node.leftChild!;
+            this.replaceNode(node, replacement);
+        } else if (node.leftChild!.value === null) {
+            await this.explainStep('Replace with non-null right child', <div>
+                We have found the <HighlightNode node={node} colour={HighlightColours.RED}>node node with value {node.value}</HighlightNode>
+                , so we can now remove it.
+                Since this node has a <HighlightNode node={node.leftChild!} colour={HighlightColours.BLUE}>a null left child </HighlightNode>
+                and a <HighlightNode node={node.rightChild!} colour={HighlightColours.GREEN}>a non-null right child</HighlightNode>,
+                so we shall replace the node with its <strong>right</strong> child.
+            </div>);
+
+            // If there is no left child, replace with the right
+            replacement = node.rightChild!;
+            this.replaceNode(node, replacement);
+        } else {
+            await this.explainStep('Find minimum greater value', <div>
+                We have found the <HighlightNode node={node} colour={HighlightColours.RED}>node with value {node.value} </HighlightNode>
+                , so we can now remove it.  This node has both
+                    <HighlightNode node={node.leftChild!} colour={HighlightColours.BLUE}>left </HighlightNode>
+                and
+                    <HighlightNode node={node.rightChild!} colour={HighlightColours.GREEN}>right </HighlightNode>
+                children, so we need to promote the minimum value in the <strong>right</strong> subtree.
+            </div>);
+
+            // Node has two children, promote the minimum value in the right subtree
+            let minChild = node.rightChild!.minChild();
+
+            await this.explainStep('Promote minimum greater value', <div>
+                Now that we have found the
+                    <HighlightNode node={minChild} colour={HighlightColours.GREEN}>minimum greater node</HighlightNode>
+                , we shall replace the
+                    <HighlightNode node={node} colour={HighlightColours.RED}>node to remove</HighlightNode>.
+            </div>);
+            node.value = minChild.value;
+            node.colour = minChild.colour;
+
+            // Delete minimum greater node
+            await this.explainStep('Splice out replacement node', <div>
+                With the
+                    <HighlightNode node={node} colour={HighlightColours.GREEN}>promoted node </HighlightNode>
+                having assumed its new position, we must now remove it from its
+                    <HighlightNode node={minChild} colour={HighlightColours.RED}>old position</HighlightNode>
+                .  Since we know that there are no values to the left of this node, we can simply promote its
+                    <HighlightNode node={minChild.rightChild!} colour={HighlightColours.BLUE}>right child </HighlightNode>
+                to its position.
+            </div>);
+            // Minimum child will never be the root, so we can safely set the parent's values
+            minChild.rightChild!.parent = minChild.parent;
+            minChild.parent!.rightChild = minChild.rightChild;
+            replacement = node;
+        }
+
+        return replacement;
+    }
+
+    /**
+     * Replace a node in this tree, correctly modifying parent references.
+     * Helper method for spliceNode().
+     *
+     * @param oldNode The node to be replaced.
+     * @param newNode The node with which to replace the old node.
+     * @see RedBlackTree#spliceNode(BinaryTreeNode)
+     */
+    @action.bound
+    private replaceNode(oldNode: BinaryTreeNode, newNode: BinaryTreeNode): void {
+        newNode.parent = oldNode.parent;
+        if (oldNode.parent === null) {
+            // If there is no parent, this node was the root
+            this.root = newNode;
+        } else if (oldNode.isLeftChild()) {
+            oldNode.parent.leftChild = newNode;
+        } else {
+            oldNode.parent.rightChild = newNode;
+        }
     }
 }

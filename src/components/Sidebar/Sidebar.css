@@ -1,7 +1,7 @@
 .sidebar {
     min-width: 350px;
-    min-height: calc(100vh - 50px);
-    max-height: calc(100vh - 50px);
+    max-width: 350px;
+    height: calc(100vh - 50px);
     padding: 20px;
     background-color: #f6f6f6;
     box-shadow: inset 3px 0 4px -2px #ccc;

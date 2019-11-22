@@ -106,6 +106,24 @@ export class BinaryTreeNode {
         // Once we reach a dead end, we have found the minimum
         return curNode;
     }
+
+    /** Make this node into a null terminator. */
+    public makeNull(): void {
+        this.value = null;
+        this.colour = 'black';
+        this.leftChild = null;
+        this.rightChild = null;
+    }
+
+    /** Returns whether this node is the left child of its parent. */
+    public isLeftChild(): boolean {
+        return this.parent !== null && this == this.parent.leftChild;
+    }
+
+    /** Returns whether this node is the right child of its parent. */
+    public isRightChild(): boolean {
+        return this.parent !== null && this == this.parent.rightChild;
+    }
 }
 
 /**
