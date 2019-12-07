@@ -117,12 +117,12 @@ export class BinaryTreeNode {
 
     /** Returns whether this node is the left child of its parent. */
     public isLeftChild(): boolean {
-        return this.parent !== null && this == this.parent.leftChild;
+        return this.parent !== null && this === this.parent.leftChild;
     }
 
     /** Returns whether this node is the right child of its parent. */
     public isRightChild(): boolean {
-        return this.parent !== null && this == this.parent.rightChild;
+        return this.parent !== null && this === this.parent.rightChild;
     }
 }
 
