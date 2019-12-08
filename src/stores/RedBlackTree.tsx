@@ -495,7 +495,7 @@ export default class RedBlackTree extends AbstractTree {
                 , we still have a path rule violation to handle.
                 The <strong>{node.isLeftChild() ? 'right' : 'left'}</strong> subtree of the
                     <HighlightNode node={sibling} colour={HighlightColours.ORANGE}>promoted sibling </HighlightNode>
-                now has one fewer <NodeColour colour={this.BLACK} /> node than the
+                now has one fewer <NodeColour colour={this.BLACK} /> nodes than the
                 <strong>{node.isLeftChild() ? 'left' : 'right'}</strong> subtree;
                 to rectify this issue, we can recolour the parent <NodeColour colour={this.RED} /> and the sibling <NodeColour colour={this.BLACK} />.
             </div>);
@@ -506,7 +506,79 @@ export default class RedBlackTree extends AbstractTree {
             await this.rebalanceRootDoubleBlack(node);
         } else {
             // Case does not apply, proceed to next
-            // TODO: case 3
+            await this.rebalanceBlackCluster(node);
+        }
+    }
+
+    /**
+     * "Case Three" of double-black rebalancing.  In the following case:
+     * - The parent of the node on which to rebalance is black
+     * - The sibling of the node is black
+     * - The sibling's children are black
+     *
+     * Recolour the sibling red and rebalance relative to the parent.
+     *
+     * @param node The node relative to which to rebalanace the tree.
+     */
+    @action.bound
+    private async rebalanceBlackCluster(node: BinaryTreeNode): Promise<void> {
+        let parent = node.parent!, sibling = node.sibling!;
+        if (parent.colour === this.BLACK && sibling.colour === this.BLACK
+                && sibling.leftChild!.colour === this.BLACK && sibling.rightChild!.colour === this.BLACK) {
+            await this.explainStep('Recolour sibling red', <div>
+                As the
+                    <HighlightNode node={parent} colour={HighlightColours.BLUE}>parent </HighlightNode>
+                of the
+                    <HighlightNode node={node} colour={HighlightColours.GREEN}>node upon which to rebalance </HighlightNode>
+                the tree is <NodeColour colour={this.BLACK} />, as are the
+                    <HighlightNode node={sibling} colour={HighlightColours.ORANGE}>rebalance node's sibling </HighlightNode>
+                and both of its children, we shall recolour the sibling <NodeColour colour={this.RED} /> in an attempt to restore compliance with the path rule.
+                However, doing so may cause an invariant violation at a higher level of the tree,
+                so we shall now attempt to rebalance relative to the <strong>parent</strong>.
+            </div>);
+
+            // Recolour in a in attempt to restore path rule violation
+            sibling.colour = this.RED;
+            await this.rebalanceRootDoubleBlack(parent);
+        } else {
+            // Case does not apply, proceed to next
+            await this.rebalanceAlternatingSiblingBranch(node);
+        }
+    }
+
+    /**
+     * "Case Four" of double-black rebalancing.  In the following case:
+     * - The parent of the node on which to rebalance is red
+     * - The sibling of the node is black
+     * - The sibling's children are black
+     * 
+     * Swap the colours of the parent and sibling to restore compliance with the
+     * path rule.
+     *
+     * @param node The node relative to which to rebalance the tree.
+     */
+    @action.bound
+    private async rebalanceAlternatingSiblingBranch(node: BinaryTreeNode): Promise<void> {
+        let parent = node.parent!, sibling = node.sibling!;
+        if (parent.colour === this.RED && sibling.colour === this.BLACK &&
+                sibling.leftChild!.colour === this.BLACK && sibling.rightChild!.colour === this.BLACK) {
+            await this.explainStep('Swap parent and sibling colours', <div>
+                As the
+                    <HighlightNode node={parent} colour={HighlightColours.BLUE}>parent </HighlightNode>
+                of the
+                    <HighlightNode node={node} colour={HighlightColours.GREEN}>node upon which to rebalance </HighlightNode>
+                the tree is <NodeColour colour={this.RED} /> and the
+                    <HighlightNode node={sibling} colour={HighlightColours.ORANGE}>rebalance node's sibling </HighlightNode>
+                and both of its children are <NodeColour colour={this.BLACK} />,
+                we shall simply swap their colours to restore compliance with the path rule.
+            </div>);
+
+            // Swap colours without recursing
+            parent.colour = this.BLACK;
+            sibling.colour = this.RED;
+        } else {
+            // Case does not apply, proceed to next
+            // TODO case 5
         }
     }
 
@@ -528,5 +600,4 @@ export default class RedBlackTree extends AbstractTree {
 
         leaf.makeNull();
     }
-
 }
