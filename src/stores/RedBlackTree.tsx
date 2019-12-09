@@ -371,7 +371,7 @@ export default class RedBlackTree extends AbstractTree {
         if (node === this.root) {
             if (node.isLeaf()) {
                 // If the root is a leaf, it is safe to clear the tree
-                await this.removeLeaf(node);
+                await this.removeLeaf(node, true);
             } else {
                 await this.explainStep('Promote child to root', <div>
                     We have found the
@@ -388,7 +388,7 @@ export default class RedBlackTree extends AbstractTree {
             }
         } else if (node.colour === this.RED) {
             // If we have made it this far and the node is red, it is a leaf
-            await this.removeLeaf(node);
+            await this.removeLeaf(node, true);
         } else if (definedChild.colour === this.RED) {
             await this.explainStep('Promote child node', <div>
                 We have found the
@@ -416,12 +416,14 @@ export default class RedBlackTree extends AbstractTree {
             // Colour promoted node black to restore path rule compliance
             definedChild.colour = this.BLACK;
         } else {
+            let nodeDescription = node.isLeaf ? <span>a <NodeColour colour={this.BLACK} /> leaf</span>
+                : <span><NodeColour colour={this.BLACK} /> and has only
+                    <HighlightNode node={definedChild} colour={HighlightColours.GREEN}>one <NodeColour colour={this.BLACK} /> child</HighlightNode></span>;
+
             await this.explainStep('Rebalance double-black path', <div>
                 We have found the
                     <HighlightNode node={node} colour={HighlightColours.RED}>node with value {node.value}</HighlightNode>
-                , so we can now remove it.  As this node is <NodeColour colour={this.BLACK} /> and has only
-                    <HighlightNode node={definedChild} colour={HighlightColours.GREEN}>one <NodeColour colour={this.BLACK} /> child</HighlightNode>
-                , simply removing the node from the tree and promoting the child would result in a violation of the path rule.
+                , so we can now remove it.  As this node is {nodeDescription}, simply removing the node from the tree and promoting the child would result in a violation of the path rule.
                 Thus, we must first rebalance the tree to ensure that it will be compliant with the path rule after the target node has been deleted.
             </div>);
             // Removing a black node with a black child: multiple cases
@@ -431,8 +433,8 @@ export default class RedBlackTree extends AbstractTree {
                 Now that we have rebalanced the tree to ensure that no invariant violations will occur upon removing the
                     <HighlightNode node={node} colour={HighlightColours.RED}>node with value {node.value} </HighlightNode>
                 by forcing it to become a leaf node, we can safely proceed to remove it from the tree.
-            </div>);
-            await this.removeLeaf(node);
+            </div>, true);
+            await this.removeLeaf(node, false);
         }
     }
 
@@ -481,8 +483,9 @@ export default class RedBlackTree extends AbstractTree {
                     <HighlightNode node={node} colour={HighlightColours.GREEN}>node upon which to rebalance </HighlightNode>
                 the tree is <NodeColour colour={this.BLACK} /> and the
                     <HighlightNode node={sibling} colour={HighlightColours.ORANGE}>rebalance node's sibling </HighlightNode>
-                is <NodeColour colour={this.RED} /> with exclusively <NodeColour colour={this.BLACK} /> children,
-                we can rotate <strong>{node.isLeftChild() ? 'left' : 'right'}</strong> about the <strong>parent</strong>
+                is <NodeColour colour={this.RED} /> with
+                    <HighlightNode node={sibling.leftChild!} colour={HighlightColours.RED}>exclusively</HighlightNode> <NodeColour colour={this.BLACK} /> <HighlightNode node={sibling.rightChild!} colour={HighlightColours.RED}>children</HighlightNode>,
+                we can rotate <strong>{node.isLeftChild() ? 'left ' : 'right '}</strong> about the <strong>parent </strong>
                 to restore compliance with the path rule.
             </div>);
 
@@ -499,10 +502,10 @@ export default class RedBlackTree extends AbstractTree {
                 of the
                     <HighlightNode node={node} colour={HighlightColours.GREEN}>node upon which to rebalance</HighlightNode>
                 , we still have a path rule violation to handle.
-                The <strong>{node.isLeftChild() ? 'right' : 'left'}</strong> subtree of the
+                The <strong>{node.isLeftChild() ? 'right ' : 'left '}</strong> subtree of the
                     <HighlightNode node={sibling} colour={HighlightColours.ORANGE}>promoted sibling </HighlightNode>
                 now has one fewer <NodeColour colour={this.BLACK} /> nodes than the
-                <strong>{node.isLeftChild() ? 'left' : 'right'}</strong> subtree;
+                <strong>{node.isLeftChild() ? ' left ' : ' right '}</strong> subtree;
                 to rectify this issue, we can recolour the parent <NodeColour colour={this.RED} /> and the sibling <NodeColour colour={this.BLACK} />.
             </div>);
 
@@ -538,7 +541,8 @@ export default class RedBlackTree extends AbstractTree {
                     <HighlightNode node={node} colour={HighlightColours.GREEN}>node upon which to rebalance </HighlightNode>
                 the tree is <NodeColour colour={this.BLACK} />, as are the
                     <HighlightNode node={sibling} colour={HighlightColours.ORANGE}>rebalance node's sibling </HighlightNode>
-                and both of its children, we shall recolour the sibling <NodeColour colour={this.RED} /> in an attempt to restore compliance with the path rule.
+                and <HighlightNode node={sibling.leftChild!} colour={HighlightColours.RED}>both of</HighlightNode> <HighlightNode node={sibling.rightChild!} colour={HighlightColours.RED}>its children</HighlightNode>
+                , we shall recolour the sibling <NodeColour colour={this.RED} /> in an attempt to restore compliance with the path rule.
                 However, doing so may cause an invariant violation at a higher level of the tree,
                 so we shall now attempt to rebalance relative to the <strong>parent</strong>.
             </div>);
@@ -575,8 +579,8 @@ export default class RedBlackTree extends AbstractTree {
                     <HighlightNode node={node} colour={HighlightColours.GREEN}>node upon which to rebalance </HighlightNode>
                 the tree is <NodeColour colour={this.RED} /> and the
                     <HighlightNode node={sibling} colour={HighlightColours.ORANGE}>rebalance node's sibling </HighlightNode>
-                and both of its children are <NodeColour colour={this.BLACK} />,
-                we shall simply swap their colours to restore compliance with the path rule.
+                and <HighlightNode node={sibling.leftChild!} colour={HighlightColours.RED}>both of</HighlightNode> <HighlightNode node={sibling.rightChild!} colour={HighlightColours.RED}>its children </HighlightNode>
+                are <NodeColour colour={this.BLACK} />, we shall simply swap their colours to restore compliance with the path rule.
             </div>);
 
             // Swap colours without recursing
@@ -615,7 +619,7 @@ export default class RedBlackTree extends AbstractTree {
                     <HighlightNode node={inner} colour={HighlightColours.RED}>child to the inside of the tree </HighlightNode>
                 is <NodeColour colour={this.RED} />, and its
                     <HighlightNode node={outer} colour={HighlightColours.ORANGE}>outer child </HighlightNode>
-                is <NodeColour colour={this.BLACK} />, we shall rotate <strong>{node.isLeftChild() ? 'right' : 'left'}</strong>
+                is <NodeColour colour={this.BLACK} />, we shall rotate <strong>{node.isLeftChild() ? 'right ' : 'left '}</strong>
                 about the sibling in order to promote the inner child in anticipation of a path rule violation.
             </div>);
 
@@ -669,10 +673,10 @@ export default class RedBlackTree extends AbstractTree {
             of the <HighlightNode node={node} colour={HighlightColours.GREEN}>node upon which to rebalance </HighlightNode>
             the tree is <NodeColour colour={this.BLACK} /> and its
                 <HighlightNode node={outer} colour={HighlightColours.ORANGE}>child to the outside of the tree </HighlightNode>
-            is <NodeColour colour={this.RED} />, we shall rotate <strong>{node.isLeftChild() ? 'left' : 'right'}</strong>
+            is <NodeColour colour={this.RED} />, we shall rotate <strong>{node.isLeftChild() ? 'left ' : 'right '}</strong>
             about the rebalance node's
                 <HighlightNode node={parent} colour={HighlightColours.RED}>parent </HighlightNode>
-            in order to promote the rebalance node one level.
+            in order to demote the rebalance node one level.
         </div>);
 
         // Rotate about the parent to promote the rebalance node
@@ -706,15 +710,19 @@ export default class RedBlackTree extends AbstractTree {
      * the node to null.
      *
      * @param leaf The leaf node to remove from the tree.
+     * @param explain Whether to show an explanation for removal of the leaf as
+     *     a problem step.
      */
     @action.bound
-    private async removeLeaf(leaf: BinaryTreeNode): Promise<void> {
-        await this.explainStep('Replace leaf with null', <div>
-            We have found the
-                <HighlightNode node={leaf} colour={HighlightColours.RED}>node with value {leaf.value}</HighlightNode>
-            , so we can now remove it.
-            Since this node is a leaf, we shall replace it with null as it has no children to promote.
-        </div>, true);
+    private async removeLeaf(leaf: BinaryTreeNode, explain: boolean): Promise<void> {
+        if (explain) {
+            await this.explainStep('Replace leaf with null', <div>
+                We have found the
+                    <HighlightNode node={leaf} colour={HighlightColours.RED}>node with value {leaf.value}</HighlightNode>
+                , so we can now remove it.
+                Since this node is a leaf, we shall replace it with null as it has no children to promote.
+            </div>, true);
+        }
 
         leaf.makeNull();
     }
