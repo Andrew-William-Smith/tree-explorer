@@ -1,5 +1,5 @@
 import { action, observable } from 'mobx';
-import { Intent, IToaster, Position, Toaster } from '@blueprintjs/core';
+import { Intent, IToaster, Position, TabId, Toaster } from '@blueprintjs/core';
 import { IconNames, IconName } from '@blueprintjs/icons';
 
 import { AbstractTree } from './AbstractTree';
@@ -59,7 +59,7 @@ export default class ApplicationStore implements IApplicationStore {
 
     constructor() {
         this.items = [];
-        this.tree = new RedBlackTree(this.explainStep);
+        this.tree = new NaiveTree(this.explainStep);
         this.treeOperating = false;
 
         // Initialise explanation parameters
@@ -123,6 +123,32 @@ export default class ApplicationStore implements IApplicationStore {
     public clearTree = () => {
         this.items = [];
         this.tree.reset();
+    }
+
+    /**
+     * Reset the tree to the specified type, retaining elements in the order in
+     * which they were added.  Event handler for blueprint/Tabs onChange.
+     */
+    @action.bound
+    public changeTreeType = async (newTabId: TabId, prevTabId: TabId) => {
+        // If the tab did not actually change, ignore it
+        if (newTabId === prevTabId) {
+            return;
+        }
+
+        // Set tree type based on selected tab
+        if (newTabId === 'naiveTree') {
+            this.tree = new NaiveTree(this.explainStep);
+        } else if (newTabId === 'redBlackTree') {
+            this.tree = new RedBlackTree(this.explainStep);
+        }
+
+        // Re-add items in the order in which they were added
+        let oldItems = [...this.items];
+        this.items = [];
+        for (const item of oldItems) {
+            await this.addItem(item);
+        }
     }
 
     /**

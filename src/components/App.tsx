@@ -22,9 +22,9 @@ export default class App extends React.Component<IAppProps, {}> {
                         <NavbarHeading><strong>Tree Explorer</strong></NavbarHeading>
                     </NavbarGroup>
                     <NavbarGroup className="treeTypeTabs" align={Alignment.LEFT}>
-                        <Tabs animate large>
-                            <Tab id="naiveTree">Na&iuml;ve Tree</Tab>
-                            <Tab id="redBlackTree" disabled>Red/Black Tree</Tab>
+                        <Tabs animate large onChange={this.props.applicationStore!.changeTreeType}>
+                            <Tab id="naiveTree">Binary Search Tree</Tab>
+                            <Tab id="redBlackTree">Red/Black Tree</Tab>
                             <Tab id="avlTree" disabled>AVL Tree</Tab>
                         </Tabs>
                     </NavbarGroup>
