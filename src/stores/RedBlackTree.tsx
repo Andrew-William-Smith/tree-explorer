@@ -619,8 +619,8 @@ export default class RedBlackTree extends AbstractTree {
                     <HighlightNode node={inner} colour={HighlightColours.RED}>child to the inside of the tree </HighlightNode>
                 is <NodeColour colour={this.RED} />, and its
                     <HighlightNode node={outer} colour={HighlightColours.ORANGE}>outer child </HighlightNode>
-                is <NodeColour colour={this.BLACK} />, we shall rotate <strong>{node.isLeftChild() ? 'right ' : 'left '}</strong>
-                about the sibling in order to promote the inner child in anticipation of a path rule violation.
+                is <NodeColour colour={this.BLACK} />, we shall rotate <strong>{node.isLeftChild() ? 'right ' : 'left '}</strong> about
+                the sibling in order to promote the inner child in anticipation of a path rule violation.
             </div>);
 
             // Rotate to promote the inner child
@@ -636,8 +636,8 @@ export default class RedBlackTree extends AbstractTree {
                 of the <HighlightNode node={sibling} colour={HighlightColours.BLUE}>sibling </HighlightNode>
                 of the <HighlightNode node={node} colour={HighlightColours.GREEN}>rebalance node</HighlightNode>
                 , we are now ready to proceed to the final step of rebalancing for this node.
-                However, in order for this step to apply, we must recolour the sibling <NodeColour colour={this.RED} />
-                and its former inner child (now parent) <NodeColour colour={this.BLACK} />.
+                However, in order for this step to apply, we must recolour the sibling <NodeColour colour={this.RED} /> and
+                its former inner child (now parent) <NodeColour colour={this.BLACK} />.
             </div>);
 
             // Recolour in order to execute case 6
@@ -673,8 +673,8 @@ export default class RedBlackTree extends AbstractTree {
             of the <HighlightNode node={node} colour={HighlightColours.GREEN}>node upon which to rebalance </HighlightNode>
             the tree is <NodeColour colour={this.BLACK} /> and its
                 <HighlightNode node={outer} colour={HighlightColours.ORANGE}>child to the outside of the tree </HighlightNode>
-            is <NodeColour colour={this.RED} />, we shall rotate <strong>{node.isLeftChild() ? 'left ' : 'right '}</strong>
-            about the rebalance node's
+            is <NodeColour colour={this.RED} />, we shall rotate <strong>{node.isLeftChild() ? 'left ' : 'right '}</strong> about
+            the rebalance node's
                 <HighlightNode node={parent} colour={HighlightColours.RED}>parent </HighlightNode>
             in order to demote the rebalance node one level.
         </div>);
@@ -693,8 +693,8 @@ export default class RedBlackTree extends AbstractTree {
                 <HighlightNode node={parent} colour={HighlightColours.RED}>parent</HighlightNode>
             , we still have a path rule violation to handle in the subtree containing its former
                 <HighlightNode node={sibling} colour={HighlightColours.BLUE}>sibling</HighlightNode>
-            .  In order to rectify this issue, we shall colour the sibling's children <NodeColour colour={this.BLACK} />
-            and assign the sibling the colour of its former parent, <NodeColour colour={parent.colour} />.
+            .  In order to rectify this issue, we shall colour the sibling's children <NodeColour colour={this.BLACK} /> and
+            assign the sibling the colour of its former parent, <NodeColour colour={parent.colour} />.
         </div>);
 
         sibling.colour = parent.colour;

@@ -12,16 +12,17 @@ interface ISidebarProps {
     applicationStore?: ApplicationStore
 }
 
+interface ISidebarState {
+    addOneValue: string;
+    addManyValue: string;
+}
+
 @inject('applicationStore')
 @observer
-export default class Sidebar extends React.Component<ISidebarProps, {}> {
-    private addItemRef: HTMLInputElement | null;
-    private addManyRef: HTMLInputElement | null;
-
+export default class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     constructor(props: ISidebarProps) {
         super(props);
-        this.addItemRef = null;
-        this.addManyRef = null;
+        this.state = { addOneValue: '', addManyValue: '' };
     }
 
     private addTreeItemKbd = (evt: React.KeyboardEvent<HTMLInputElement>) => {
@@ -32,58 +33,46 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
     }
 
     private addTreeItem = () => {
-        if (this.addItemRef !== null) {
-            let item = this.addItemRef.value;
-            if (item !== '') {
-                this.props.applicationStore!.addItem(+item);
-                this.addItemRef.value = '';
-            }
+        if (this.state.addOneValue !== '') {
+            this.props.applicationStore!.addItem(+this.state.addOneValue);
+            this.setState({ addOneValue: '' });
         }
     };
 
     private addManyAscending = async () => {
-        if (this.addManyRef !== null) {
-            let item = this.addManyRef.value;
-            if (item !== '') {
-                for (let i = 1; i <= +item; i++)
-                    await this.props.applicationStore!.addItem(i);
+        if (this.state.addManyValue !== '') {
+            for (let i = 1; i <= +this.state.addManyValue; i++)
+                await this.props.applicationStore!.addItem(i);
 
-                this.addManyRef.value = '';
-            }
+            this.setState({ addManyValue: '' });
         }
     }
 
     private addManyDescending = async () => {
-        if (this.addManyRef !== null) {
-            let item = this.addManyRef.value;
-            if (item !== '') {
-                for (let i = +item; i >= 1; i--)
-                    await this.props.applicationStore!.addItem(i);
+        if (this.state.addManyValue !== '') {
+            for (let i = +this.state.addManyValue; i >= 1; i++)
+                await this.props.applicationStore!.addItem(i);
 
-                this.addManyRef.value = '';
-            }
+            this.setState({ addManyValue: '' });
         }
     }
 
     private addManyRandom = async () => {
-        if (this.addManyRef !== null) {
-            let item = this.addManyRef.value;
-            if (item !== '') {
-                // Generate a list of numbers in random order
-                let itemNum = +item;
-                let items = [];
-                for (let i = 1; i <= itemNum; i++)
-                    items.push(i);
-                // Fisher-Yates shuffle
-                for (let i = itemNum - 1; i > 0; i--) {
-                    const newIdx = Math.floor(Math.random() * (i + 1));
-                    [items[i], items[newIdx]] = [items[newIdx], items[i]];
-                }
-                // Add values to tree
-                for (let i = 0; i < itemNum; i++)
-                    await this.props.applicationStore!.addItem(items[i]);
-                this.addManyRef.value = '';
+        if (this.state.addManyValue !== '') {
+            // Generate a list of numbers in random order
+            let itemNum = +this.state.addManyValue;
+            let items = [];
+            for (let i = 1; i <= itemNum; i++)
+                items.push(i);
+            // Fisher-Yates shuffle
+            for (let i = itemNum - 1; i > 0; i--) {
+                const newIdx = Math.floor(Math.random() * (i + 1));
+                [items[i], items[newIdx]] = [items[newIdx], items[i]];
             }
+            // Add values to tree
+            for (let i = 0; i < itemNum; i++)
+                await this.props.applicationStore!.addItem(items[i]);
+            this.setState({ addManyValue: '' });
         }
     }
 
@@ -108,7 +97,9 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
         return (
             <div className="sidebar">
                 <ControlGroup fill>
-                    <NumericInput inputRef={ref => this.addItemRef = ref} leftIcon={IconNames.NEW_OBJECT}
+                    <NumericInput value={this.state.addOneValue}
+                        onValueChange={(asNum, asString) => this.setState({ addOneValue: asString })}
+                        leftIcon={IconNames.NEW_OBJECT}
                         placeholder="Add an item" onKeyUp={this.addTreeItemKbd}
                         disabled={treeOperating} fill />
                     <Button intent={Intent.SUCCESS} onClick={this.addTreeItem}
@@ -116,8 +107,10 @@ export default class Sidebar extends React.Component<ISidebarProps, {}> {
                 </ControlGroup>
 
                 <ControlGroup className="addManyInput" fill>
-                    <NumericInput inputRef={ref => this.addManyRef = ref} leftIcon={IconNames.ADD_TO_ARTIFACT}
-                        placeholder="Add many items" disabled={treeOperating} fill />
+                    <NumericInput value={this.state.addManyValue}
+                        onValueChange={(asNum, asString) => this.setState({ addManyValue: asString })}
+                        leftIcon={IconNames.ADD_TO_ARTIFACT} placeholder="Add many items"
+                        disabled={treeOperating} fill />
                     <Tooltip content="Add values ascending" position={Position.BOTTOM}>
                         <Button intent={Intent.SUCCESS} icon={IconNames.SORT_NUMERICAL}
                             onClick={this.addManyAscending} disabled={treeOperating} />
