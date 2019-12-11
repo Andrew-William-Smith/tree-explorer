@@ -1,0 +1,25 @@
+.treeNode {
+    border: 3px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    display: inline-block;
+    margin: 25px 5px 0 5px;
+    background-color: white;
+}
+
+.nullNode {
+    color: #aaa;
+    border: 1px dashed #ddd;
+}
+
+.subtreeGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.treeNodeChildren {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}

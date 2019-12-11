@@ -1,0 +1,26 @@
+.treeDisplay {
+    min-height: calc(100vh - 50px);
+    max-height: calc(100vh - 50px);
+    flex-grow: 1;
+    padding: 20px;
+    overflow: scroll;
+    display: inherit;
+    position: relative;
+    align-items: start;
+}
+
+.treeDisplay .treeDisplayEmpty {
+    padding: 14px;
+}
+
+.treeDisplayConnection {
+    position: absolute;
+    height: 2px;
+    background-color: #aaa;
+    transform-origin: left;
+    z-index: -1;
+}
+
+.hiddenOps {
+    display: none;
+}

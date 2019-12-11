@@ -20,6 +20,8 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
+    "predeploy": "react-app-rewired build",
+    "deploy": "gh-pages -d build",
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-scripts eject"
   },
@@ -41,6 +43,8 @@
   "devDependencies": {
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.4.4",
     "customize-cra": "^0.8.0",
+    "gh-pages": "^2.1.1",
     "react-app-rewired": "^2.1.5"
-  }
+  },
+  "homepage": "http://andrew-william-smith.github.io/tree-explorer"
 }

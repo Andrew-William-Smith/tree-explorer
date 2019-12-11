@@ -1,0 +1,15 @@
+.explanationCard {
+    padding: 14px !important;
+    float: right;
+    display: block;
+    max-width: 400px;
+    min-width: 400px;
+    position: absolute;
+    right: 20px;
+    background-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.explanationCard .actionButtons {
+    margin-top: 8px;
+    float: right;
+}

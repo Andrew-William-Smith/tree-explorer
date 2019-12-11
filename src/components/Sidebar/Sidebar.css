@@ -1,0 +1,45 @@
+.sidebar {
+    min-width: 350px;
+    max-width: 350px;
+    height: calc(100vh - 50px);
+    padding: 20px;
+    background-color: #f6f6f6;
+    box-shadow: inset 3px 0 4px -2px #ccc;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebarTraversals {
+    margin-top: -4px;
+    margin-bottom: 20px;
+}
+
+.sidebarTreeItems {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.sidebar .bp3-card {
+    padding: 14px;
+}
+
+.sidebar .explainCheckbox {
+    margin-top: 14px;
+}
+
+.sidebar .explainCheckbox:not(:last-child) {
+    margin-bottom: 0;
+}
+
+.animationSliderContainer {
+    margin-top: 14px;
+}
+
+.animationSliderContainer .bp3-slider {
+    width: 95%;
+    margin-top: 6px;
+}
+
+.addManyInput {
+    margin-top: 10px;
+}
