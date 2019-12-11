@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import { Icon } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 
@@ -8,6 +9,8 @@ import './TreeNode.css';
 interface ITreeNodeProps {
     /** The node that this element represents. */
     node: BinaryTreeNode;
+    /** The colour of this node as it is highlighted in the current explanation. */
+    highlight: string | null;
 }
 
 interface ITreeNodeState {
@@ -16,6 +19,7 @@ interface ITreeNodeState {
     backgroundColor: string;
 }
 
+@observer
 export default class TreeNode extends React.Component<ITreeNodeProps, ITreeNodeState> {
     private ownRef: React.RefObject<any>;
 
@@ -48,9 +52,9 @@ export default class TreeNode extends React.Component<ITreeNodeProps, ITreeNodeS
         };
     };
 
-    static getDerivedStateFromProps(nextProps: ITreeNodeProps, prevState: ITreeNodeState) {
+    static getDerivedStateFromProps(nextProps: any, prevState: ITreeNodeState) {
         let nodeColour = nextProps.node.colour;
-        let highlightColour = nextProps.node.renderProps.highlightColour;
+        let highlightColour = nextProps.highlight;
         let highlighted = highlightColour !== null;
 
         if (nextProps.node.value === null) {
@@ -79,8 +83,9 @@ export default class TreeNode extends React.Component<ITreeNodeProps, ITreeNodeS
     render(): React.ReactNode {
         // If this node is non-null, navigate down the tree
         if (this.props.node.value !== null) {
-            let leftNode = <TreeNode node={this.props.node.leftChild!} />;
-            let rightNode = <TreeNode node={this.props.node.rightChild!} />;
+            let { leftChild, rightChild } = this.props.node;
+            let leftNode = <TreeNode node={leftChild!} highlight={leftChild!.renderProps.highlightColour} />;
+            let rightNode = <TreeNode node={rightChild!} highlight={rightChild!.renderProps.highlightColour} />;
 
             return (
                 <div className="subtreeGroup">

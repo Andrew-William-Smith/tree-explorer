@@ -178,7 +178,6 @@ export abstract class AbstractTree {
      */
     @action.bound
     protected async explainStep(title: string, message: React.ReactElement, terminal: boolean = false): Promise<any> {
-        this.numOperations++;
         await this.explainFunction(title, message, terminal);
         // Unhighlight all nodes from this step
         this.highlightedNodes.forEach(node => {

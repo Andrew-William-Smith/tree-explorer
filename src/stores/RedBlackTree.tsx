@@ -195,6 +195,8 @@ export default class RedBlackTree extends AbstractTree {
         node.parent = oldRight;
         if (node.rightChild!.value !== null)
             node.rightChild!.parent = node;
+        // Force tree rerender
+        this.numOperations++;
 
         await this.explainStep('Rotate under right child', <div>
             Now that the
@@ -213,6 +215,7 @@ export default class RedBlackTree extends AbstractTree {
         } else {
             this.root = oldRight;
         }
+        this.numOperations++;
 
         // Set the new parent of the promoted node
         oldRight.parent = oldParent;
@@ -255,6 +258,8 @@ export default class RedBlackTree extends AbstractTree {
         node.parent = oldLeft;
         if (node.leftChild!.value !== null)
             node.leftChild!.parent = node;
+        // Force tree rerender
+        this.numOperations++;
 
         await this.explainStep('Rotate under left child', <div>
             Now that the
@@ -273,6 +278,7 @@ export default class RedBlackTree extends AbstractTree {
         } else {
             this.root = oldLeft;
         }
+        this.numOperations++;
 
         // Set the new parent of the promoted node
         oldLeft.parent = oldParent;
