@@ -100,7 +100,7 @@ export default class RedBlackTree extends AbstractTree {
             of the
                 <HighlightNode node={node} colour={HighlightColours.GREEN}>node to rebalance </HighlightNode>
             is <NodeColour colour={this.RED} />, this tree currently violates the red rule.
-            To rectify this situation, we want to rotate the current node into the position of its
+            To rectify this situation, we want to rotate the <strong>parent</strong> into the position of the current node's
                 <HighlightNode node={grandparent} colour={HighlightColours.ORANGE}>grandparent</HighlightNode>.
         </div>);
 

@@ -198,7 +198,8 @@ export abstract class AbstractTree {
 
         await this.explainStep(`Navigate ${directionName} from ${node.value}`, <div>
             We need to determine in which direction to navigate down the tree.
-            As the value under consideration, <strong>{item}</strong>, is less than the value of the
+            As the value under consideration, <strong>{item}</strong>, is
+            <strong>{item < node.value! ? ' less ' : ' greater '}</strong> than the value of the
                 <HighlightNode node={node} colour={HighlightColours.GREEN}>current node</HighlightNode>
             , <strong>{node.value}</strong>, we shall navigate to the
                 <HighlightNode node={item < node.value! ? node.leftChild! : node.rightChild!} colour={HighlightColours.BLUE}>
