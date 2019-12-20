@@ -40,6 +40,18 @@
     margin-top: 6px;
 }
 
+.animationExplanationContainer {
+    margin-top: 14px;
+}
+
+.animationExplanationContainer .bp3-button-group {
+    margin-top: 6px;
+}
+
+.showNullSwitch {
+    margin-top: 14px;
+}
+
 .addManyInput {
     margin-top: 10px;
 }

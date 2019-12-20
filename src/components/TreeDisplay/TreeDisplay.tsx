@@ -48,14 +48,15 @@ export default class TreeDisplay extends React.Component<ITreeDisplayProps, ITre
 
     /** Render connections for the specified node and its descendants. */
     private renderNodeConnections = (node: BinaryTreeNode, lines: Array<React.ReactNode>, key: [number]) => {
+        let { renderNullNodes } = this.props.applicationStore!;
         // Render connections to the left
-        if (node.leftChild !== null) {
+        if (node.leftChild !== null && (node.leftChild.value !== null || renderNullNodes)) {
             lines.push(this.createConnection(node, node.leftChild, key[0]));
             key[0]++;
             this.renderNodeConnections(node.leftChild, lines, key);
         }
         // Render connections to the right
-        if (node.rightChild !== null) {
+        if (node.rightChild !== null && (node.rightChild.value !== null || renderNullNodes)) {
             lines.push(this.createConnection(node, node.rightChild, key[0]));
             key[0]++;
             this.renderNodeConnections(node.rightChild, lines, key);
@@ -71,14 +72,14 @@ export default class TreeDisplay extends React.Component<ITreeDisplayProps, ITre
         // Standard point-distance formula
         let xDiff = childAnchor.x - parentAnchor.x;
         let yDiff = childAnchor.y - parentAnchor.y;
-        let length = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2)) + 1;
+        let length = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2)) + 2;
         // Compute the angle by which to rotate
         let angle = Math.atan(yDiff / xDiff);
 
         return (
             <div className="treeDisplayConnection" key={key} style={{
                 left: leftPos,
-                top: xDiff > 0 ? parentAnchor.y : childAnchor.y,
+                top: (xDiff > 0 ? parentAnchor.y : childAnchor.y) - 1,
                 width: length,
                 transform: `rotate(${angle}rad)`
             }}></div>
@@ -95,7 +96,8 @@ export default class TreeDisplay extends React.Component<ITreeDisplayProps, ITre
         return (
             <div className="treeDisplay">
                 <div className="hiddenOps">{this.props.applicationStore!.tree.numOperations}</div>
-                <TreeNode node={treeRoot} highlight={treeRoot.renderProps.highlightColour} />
+                <TreeNode node={treeRoot} highlight={treeRoot.renderProps.highlightColour}
+                    renderNull={this.props.applicationStore!.renderNullNodes} />
                 {this.state.connectionLines}
                 <ExplanationPane />
             </div>

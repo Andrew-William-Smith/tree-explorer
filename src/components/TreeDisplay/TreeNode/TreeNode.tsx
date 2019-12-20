@@ -11,6 +11,8 @@ interface ITreeNodeProps {
     node: BinaryTreeNode;
     /** The colour of this node as it is highlighted in the current explanation. */
     highlight: string | null;
+    /** Whether this node should be rendered if it is null. */
+    renderNull: boolean;
 }
 
 interface ITreeNodeState {
@@ -84,8 +86,8 @@ export default class TreeNode extends React.Component<ITreeNodeProps, ITreeNodeS
         // If this node is non-null, navigate down the tree
         if (this.props.node.value !== null) {
             let { leftChild, rightChild } = this.props.node;
-            let leftNode = <TreeNode node={leftChild!} highlight={leftChild!.renderProps.highlightColour} />;
-            let rightNode = <TreeNode node={rightChild!} highlight={rightChild!.renderProps.highlightColour} />;
+            let leftNode = <TreeNode node={leftChild!} highlight={leftChild!.renderProps.highlightColour} renderNull={this.props.renderNull} />;
+            let rightNode = <TreeNode node={rightChild!} highlight={rightChild!.renderProps.highlightColour} renderNull={this.props.renderNull} />;
 
             return (
                 <div className="subtreeGroup">
@@ -100,11 +102,15 @@ export default class TreeNode extends React.Component<ITreeNodeProps, ITreeNodeS
             );
         }
 
-        // The node is null, render a placeholder
-        return (
-            <div ref={this.ownRef} className="treeNode nullNode" style={this.state}>
-                <Icon icon={IconNames.DISABLE} />
-            </div>
-        );
+        // The node is null, render a placeholder if nulls should be rendered
+        if (this.props.renderNull) {
+            return (
+                <div ref={this.ownRef} className="treeNode nullNode" style={this.state}>
+                    <Icon icon={IconNames.DISABLE} />
+                </div>
+            );
+        }
+
+        return <div ref={this.ownRef} className="hiddenTreeNode"></div>;
     }
 }

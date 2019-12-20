@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
 
-import { Button, ButtonGroup, Card, ControlGroup, Divider, Intent, NumericInput, Position, Slider, Switch, Tooltip } from '@blueprintjs/core';
+import { Button, ButtonGroup, Card, ControlGroup, Divider, Icon, Intent, NumericInput, Position, Slider, Switch, Tooltip } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 
 import ApplicationStore, { Traversal } from '../../stores/ApplicationStore';
@@ -125,22 +125,29 @@ export default class Sidebar extends React.Component<ISidebarProps, ISidebarStat
                     </Tooltip>
                 </ControlGroup>
 
-                <div>
-                    <Switch className="explainCheckbox" checked={store.explainAdd}
-                        label="Explain additions" onChange={store.toggleExplainAdd}
-                        disabled={treeOperating} inline />
-                    <Switch className="explainCheckbox" checked={store.explainRemove}
-                        label="Explain removals" onChange={store.toggleExplainRemove}
-                        disabled={treeOperating} inline />
-                    <Switch className="explainCheckbox" checked={store.explainTraverse}
-                        label="Explain traversals" onChange={store.toggleExplainTraverse}
-                        disabled={treeOperating} />
+                <div className="animationExplanationContainer">
+                    Show explanations for:
+                    <ButtonGroup>
+                        <Button active={store.explainAdd}
+                            icon={<Icon icon={IconNames.ADD} intent={Intent.SUCCESS} />}
+                            onClick={store.toggleExplainAdd}>Addition</Button>
+                        <Button active={store.explainRemove}
+                            icon={<Icon icon={IconNames.REMOVE} intent={Intent.DANGER} />}
+                            onClick={store.toggleExplainRemove}>Removal</Button>
+                        <Button active={store.explainTraverse}
+                            icon={<Icon icon={IconNames.DIAGRAM_TREE} intent={Intent.PRIMARY} />}
+                            onClick={store.toggleExplainTraverse}>Traversal</Button>
+                    </ButtonGroup>
 
                     <div className="animationSliderContainer">
                         Animation speed (ms):
                         <Slider min={0} max={1000} stepSize={10} labelStepSize={250}
                             value={store.animationInterval} onChange={this.setAnimationInterval} />
                     </div>
+
+                    <Switch className="showNullSwitch" checked={store.renderNullNodes}
+                        onClick={store.toggleRenderNullNodes}
+                        labelElement={<span>Show <code>null</code> nodes</span>} />
                 </div>
 
                 <Divider />

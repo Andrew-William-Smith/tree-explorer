@@ -18,6 +18,8 @@ export interface IApplicationStore {
     tree: AbstractTree;
     /** Whether a tree operation is currently being performed. */
     treeOperating: boolean;
+    /** Whether to render null tree nodes. */
+    renderNullNodes: boolean;
 
     /** Whether to explain additions to the tree. */
     explainAdd: boolean;
@@ -43,6 +45,7 @@ export default class ApplicationStore implements IApplicationStore {
     @observable items: Array<number>;
     @observable tree: AbstractTree;
     @observable treeOperating: boolean;
+    @observable renderNullNodes: boolean;
 
     @observable explainAdd: boolean;
     @observable explainRemove: boolean;
@@ -61,6 +64,7 @@ export default class ApplicationStore implements IApplicationStore {
         this.items = [];
         this.tree = new NaiveTree(this.explainStep);
         this.treeOperating = false;
+        this.renderNullNodes = true;
 
         // Initialise explanation parameters
         this.explainAdd = true;
@@ -178,6 +182,14 @@ export default class ApplicationStore implements IApplicationStore {
             this.items.push(val);
         }
         this.treeOperating = false;
+    }
+
+    /**
+     * Toggle whether null tree nodes should be rendered.
+     */
+    @action.bound
+    public toggleRenderNullNodes = () => {
+        this.renderNullNodes = !this.renderNullNodes;
     }
 
     /**

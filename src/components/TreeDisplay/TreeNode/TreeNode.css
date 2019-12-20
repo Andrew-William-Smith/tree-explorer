@@ -12,6 +12,10 @@
     border: 1px dashed #ddd;
 }
 
+.hiddenTreeNode {
+    width: 24px;
+}
+
 .subtreeGroup {
     display: flex;
     flex-direction: column;
