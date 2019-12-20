@@ -50,7 +50,7 @@ export default class Sidebar extends React.Component<ISidebarProps, ISidebarStat
 
     private addManyDescending = async () => {
         if (this.state.addManyValue !== '') {
-            for (let i = +this.state.addManyValue; i >= 1; i++)
+            for (let i = +this.state.addManyValue; i >= 1; i--)
                 await this.props.applicationStore!.addItem(i);
 
             this.setState({ addManyValue: '' });
